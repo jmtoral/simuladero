@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ruta: plan vs. real</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f4f6f7; --surface: #fff; --surface-2: #f8f9fa; --ink: #1a1f24; --muted: #5b646d; --line: #dde2e6; --grid: #eceff1;
+  --a: #6f7c89; --b: #e5732a; --bad: #d4372c; --ok: #1d8a4b;
+  --travel: #9fa9b2; --extra: #5f6b76; --evento: #d4372c; --meal: #c9ced3; --mealx: #8e979f; --stay: #f2c29b; --hol: #e5732a;
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111417; --surface: #181c20; --surface-2: #1d2226; --ink: #e5e9ec; --muted: #98a2ac; --line: #2a3037; --grid: #1f2429;
+  --a: #9ba6b1; --b: #f08a45; --bad: #f05a4e; --ok: #45bd75;
+  --travel: #5f6973; --extra: #9aa5b0; --evento: #f05a4e; --meal: #3a4148; --mealx: #6c757e; --stay: #7a4d2c; --hol: #f08a45;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111417; --surface: #181c20; --surface-2: #1d2226; --ink: #e5e9ec; --muted: #98a2ac; --line: #2a3037; --grid: #1f2429;
+  --a: #9ba6b1; --b: #f08a45; --bad: #f05a4e; --ok: #45bd75;
+  --travel: #5f6973; --extra: #9aa5b0; --evento: #f05a4e; --meal: #3a4148; --mealx: #6c757e; --stay: #7a4d2c; --hol: #f08a45;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-body); }
+h1, h2 { font-family: var(--f-display); margin: 0; letter-spacing: -0.005em; }
+h1 { font-size: 30px; } h2 { font-size: 18px; }
+.wrap { max-width: 1480px; margin: 0 auto; padding: 20px 16px 48px; }
+@media (min-width: 768px) { .wrap { padding-inline: 28px; } }
+.grid { display: grid; gap: 20px; }
+@media (min-width: 1024px) { .grid { grid-template-columns: 340px minmax(0, 1fr); } aside { position: sticky; top: 12px; align-self: start; max-height: calc(100vh - 24px); overflow-y: auto; } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; min-width: 0; }
+main { display: grid; gap: 20px; min-width: 0; }
+.muted { color: var(--muted); } .mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-family: var(--f-display); font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.formula { font-family: var(--f-mono); font-size: 13.5px; overflow-x: auto; white-space: nowrap; padding: 8px 0; }
+.lead { max-width: 75ch; margin: 6px 0 0; }
+.ca { color: var(--a); font-weight: 600; } .cb { color: var(--b); font-weight: 600; }
+
+/* Controles */
+details.g { border-top: 1px solid var(--line); padding: 10px 0; }
+details.g > summary { cursor: pointer; font-family: var(--f-display); font-weight: 600; font-size: 15px; list-style: none; }
+details.g > summary::-webkit-details-marker { display: none; }
+details.g > summary::before { content: "▸ "; color: var(--muted); }
+details.g[open] > summary::before { content: "▾ "; }
+.ctl { margin-top: 10px; }
+.ctl .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ctl label { font-size: 13px; }
+.ctl .help { font-size: 11.5px; color: var(--muted); }
+input[type=range] { width: 100%; accent-color: var(--ink); }
+input[type=number] { width: 80px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; font: 12.5px var(--f-mono); text-align: right; color: var(--ink); }
+input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--ink); }
+:focus-visible { outline: 2px solid var(--b); outline-offset: 2px; }
+.btn { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 4px; padding: 6px 10px; font: 13px var(--f-body); cursor: pointer; }
+.btn:hover { border-color: var(--muted); }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.toast { font-size: 12px; color: var(--ok); min-height: 18px; }
+
+/* Tablas */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+thead th { font-family: var(--f-display); font-weight: 600; }
+td input[type=number] { width: 64px; }
+.scroll-x { overflow-x: auto; }
+.up { color: var(--bad); } .down { color: var(--ok); }
+
+/* Mapa */
+svg { display: block; width: 100%; height: auto; }
+svg text { font-family: var(--f-body); fill: var(--muted); font-size: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.clock { font: 600 22px var(--f-mono); }
+dialog { border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); width: min(640px, 92vw); }
+dialog textarea { width: 100%; height: 300px; font: 12px var(--f-mono); background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; }
+.two { display: grid; gap: 20px; }
+@media (min-width: 1200px) { .two { grid-template-columns: 1fr 1fr; } }
+.note { font-size: 12.5px; color: var(--muted); max-width: 80ch; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header style="margin-bottom:18px">
+    <div class="eyebrow"><a href="../" style="color:inherit">simuladero</a> · fenómeno 1</div>
+    <h1>Ruta: plan vs. real</h1>
+    <p class="lead muted">Una ruta, miles de días. El stay histórico se midió <b>por resta</b>, así que arrastró tráfico, eventos y comida larga.
+      Dos modelos aprenden de ese mismo dato: el <span class="ca">anterior</span> (OLS, promedio) y el <span class="cb">robusto</span> (limpieza, mediana y cuantil).
+      Con cada uno se planea la ruta y se ve qué pasa de verdad.</p>
+    <div class="formula">T = STEM₁ + Σ S<sub>i</sub> + (N−1)·d + C + STEM₂ &nbsp;&nbsp;·&nbsp;&nbsp; S<sub>i</sub> = t_fijo + t_var·Q<sub>i</sub> + W<sub>i</sub></div>
+  </header>
+
+  <div class="grid">
+    <aside class="panel">
+      <div class="eyebrow">Escenario</div>
+      <div class="btns" style="margin-top:8px">
+        <button class="btn" id="b-link">Copiar enlace</button>
+        <button class="btn" id="b-json">Exportar / importar</button>
+        <button class="btn" id="b-save">Guardar como mis valores</button>
+        <button class="btn" id="b-reset">Valores originales</button>
+      </div>
+      <div class="toast" id="toast"></div>
+      <div id="controls"></div>
+    </aside>
+
+    <main>
+      <section class="panel">
+        <div class="row" style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+          <h2>El día en el mapa</h2>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+            <span class="clock" id="clock">07:00</span>
+            <button class="btn" id="b-play">▶ Reproducir</button>
+            <button class="btn" id="b-restart">↺</button>
+            <button class="btn" id="b-day">Otro día</button>
+            <select class="btn" id="speed" aria-label="Velocidad">
+              <option value="15">15 min/s</option><option value="30" selected>30 min/s</option><option value="90">90 min/s</option>
+            </select>
+          </div>
+        </div>
+        <svg id="map" viewBox="0 0 1000 440" role="img" aria-label="Mapa de la ruta con dos camiones: modelo anterior y modelo robusto"></svg>
+        <div class="legend">
+          <span><span class="sw" style="background:var(--a)"></span>Camión con el modelo anterior</span>
+          <span><span class="sw" style="background:var(--b)"></span>Camión con el modelo robusto</span>
+          <span>Barras por cliente: contorno = stay planeado, relleno = stay real</span>
+          <span><span class="sw" style="background:var(--evento)"></span>Evento no productivo</span>
+        </div>
+        <div id="daysum" class="note" style="margin-top:6px"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Antes vs. después</h2>
+        <p class="note">Promedio de <span id="nreps"></span> días simulados. Los mismos días para ambos modelos.</p>
+        <div class="scroll-x"><table id="kpi"></table></div>
+      </section>
+
+      <div class="two">
+        <section class="panel">
+          <h2>El mismo dato, dos stays</h2>
+          <p class="note">Minutos por cliente. La resta infla el stay; cada modelo lo desinfla de forma distinta.</p>
+          <svg id="stays" viewBox="0 0 560 200"></svg>
+        </section>
+        <section class="panel">
+          <h2>¿Dónde se van las horas?</h2>
+          <p class="note">Composición promedio del tiempo de mercado real, en horas.</p>
+          <svg id="decomp" viewBox="0 0 560 200"></svg>
+          <div class="legend" id="decomp-legend"></div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <h2>Distribución del tiempo de mercado</h2>
+        <p class="note">Relleno = real; línea = planeado. Línea vertical roja = jornada máxima.</p>
+        <svg id="hist" viewBox="0 0 1000 300"></svg>
+      </section>
+
+      <section class="panel">
+        <h2>Firmas: ¿qué hipótesis se parece a lo observado?</h2>
+        <p class="note">Cada hipótesis deja una huella distinta en N, el plan y lo real. Las cifras observadas son <b>inventadas</b>: cámbialas por las verdaderas (no salen de esta página salvo en el enlace que tú copies).</p>
+        <div class="scroll-x"><table id="firmas"></table></div>
+      </section>
+
+      <section class="panel">
+        <h2>Verificación</h2>
+        <div id="check" class="note"></div>
+        <details style="margin-top:10px"><summary class="eyebrow" style="cursor:pointer">Supuestos del modelo</summary>
+          <ul class="note">
+            <li>Q, W, tráfico y eventos son independientes e iid entre clientes y días. Los clientes son intercambiables: no hay heterogeneidad real entre ellos, sólo ruido de estimación.</li>
+            <li>La resta: stay medido = (salida<sub>i</sub> − salida<sub>i−1</sub>) − traslado planeado [− comida planeada]. El exceso del regreso a la UO no se le carga a ningún cliente.</li>
+            <li>Los eventos no productivos ocurren a mitad del traslado hacia el cliente. El filtro de distancia detecta una fracción de ellos.</li>
+            <li>H1: en cada cliente el chofer consume una fracción φ de la holgura (stay asignado − stay necesario). Si el stay asignado es menor, no se apura: tarda lo necesario.</li>
+            <li>H2: el planificador agrega clientes en orden mientras el plan quepa en la jornada máxima.</li>
+            <li>El historial se generó sin H1 (el estándar anterior al modelo no se conoce).</li>
+          </ul>
+        </details>
+      </section>
+    </main>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <p style="margin-top:0"><b>Escenario en JSON.</b> Cópialo para guardarlo, o pega uno y presiona Aplicar. Para cambiar los valores de fábrica, edita <span class="mono">PARAMS</span> al inicio de <span class="mono">motor.js</span>.</p>
+  <textarea id="dlg-text" spellcheck="false"></textarea>
+  <div class="btns" style="margin-top:8px;justify-content:flex-end">
+    <button class="btn" id="dlg-copy">Copiar</button>
+    <button class="btn" id="dlg-apply">Aplicar</button>
+    <button class="btn" id="dlg-close">Cerrar</button>
+  </div>
+</dialog>
+
+<script src="motor.js"></script>
+<script>
+(function () {
+const $ = (id) => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const nf = (d) => new Intl.NumberFormat('es-MX', { minimumFractionDigits: d, maximumFractionDigits: d });
+const f0 = nf(0), f1 = nf(1), f2 = nf(2);
+const h = (min) => f2.format(min / 60);
+const hhmm = (min) => { const t = 7 * 60 + Math.round(min); return String(Math.floor(t / 60) % 24).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); };
+const KEY = 'simuladero.ruta.mis';
+const store = { get() { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } },
+  set(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); return true; } catch (e) { return false; } } };
+
+/* ---------- Estado: fábrica ← mis valores ← enlace ---------- */
+const clamp = (k, v) => { const r = PARAMS.find((x) => x[1] === k); return r ? Math.min(r[5], Math.max(r[4], v)) : v; };
+function merge(base, extra) {
+  const p = Object.assign({}, base);
+  if (extra) for (const k in extra) if (k in DEFAULTS && isFinite(+extra[k])) p[k] = clamp(k, +extra[k]);
+  return p;
+}
+function fromHash() { const o = {}; new URLSearchParams(location.hash.slice(1)).forEach((v, k) => { o[k] = v; }); return o; }
+let base = merge(DEFAULTS, store.get());
+let p = merge(base, fromHash());
+function writeHash() {
+  const q = new URLSearchParams();
+  for (const k in p) if (p[k] !== DEFAULTS[k]) q.set(k, p[k]);
+  history.replaceState(null, '', q.toString() ? '#' + q : location.pathname);
+}
+function toast(msg) { $('toast').textContent = msg; clearTimeout(toast.t); toast.t = setTimeout(() => { $('toast').textContent = ''; }, 2500); }
+
+/* ---------- Controles generados desde PARAMS ---------- */
+const inputs = {};
+function buildControls() {
+  const box = $('controls'); box.innerHTML = '';
+  const groups = [...new Set(PARAMS.map((r) => r[0]))].filter((g) => g !== 'Observado');
+  groups.forEach((g, gi) => {
+    const det = document.createElement('details'); det.className = 'g'; det.open = gi < 4 || g === 'Hipótesis';
+    det.innerHTML = `<summary>${g}</summary>`;
+    PARAMS.filter((r) => r[0] === g).forEach(([, k, label, , min, max, step, help]) => {
+      const div = document.createElement('div'); div.className = 'ctl';
+      const isBool = min === 0 && max === 1 && step === 1;
+      if (isBool) {
+        div.innerHTML = `<div class="row"><label for="i-${k}">${label}</label><input type="checkbox" id="i-${k}"></div>` + (help ? `<div class="help">${help}</div>` : '');
+        const cb = div.querySelector('input');
+        cb.addEventListener('change', () => set(k, cb.checked ? 1 : 0));
+        inputs[k] = { set: (v) => { cb.checked = !!v; } };
+      } else {
+        div.innerHTML = `<div class="row"><label for="n-${k}">${label}</label><input type="number" id="n-${k}" min="${min}" max="${max}" step="${step}"></div>
+          <input type="range" min="${min}" max="${max}" step="${step}" aria-label="${label}">` + (help ? `<div class="help">${help}</div>` : '');
+        const num = div.querySelector('input[type=number]'), rg = div.querySelector('input[type=range]');
+        rg.addEventListener('input', () => set(k, +rg.value));
+        num.addEventListener('change', () => set(k, clamp(k, +num.value)));
+        inputs[k] = { set: (v) => { num.value = v; rg.value = v; } };
+      }
+      det.appendChild(div);
+    });
+    box.appendChild(det);
+  });
+}
+function syncInputs() { for (const k in inputs) inputs[k].set(p[k]); }
+function set(k, v) { if (!isFinite(v)) return; p[k] = v; syncInputs(); writeHash(); schedule(); }
+
+$('b-link').onclick = () => {
+  writeHash();
+  (navigator.clipboard ? navigator.clipboard.writeText(location.href) : Promise.reject())
+    .then(() => toast('Enlace copiado.'), () => { window.prompt('Copia el enlace:', location.href); });
+};
+$('b-save').onclick = () => { base = Object.assign({}, p); toast(store.set(p) ? 'Guardado en este navegador.' : 'Este navegador no permite guardar.'); };
+$('b-reset').onclick = () => { store.set(null); base = Object.assign({}, DEFAULTS); p = Object.assign({}, DEFAULTS); syncInputs(); writeHash(); schedule(); toast('Valores originales.'); };
+$('b-json').onclick = () => { $('dlg-text').value = JSON.stringify(p, null, 2); $('dlg').showModal(); };
+$('dlg-close').onclick = () => $('dlg').close();
+$('dlg-copy').onclick = () => { $('dlg-text').select(); navigator.clipboard && navigator.clipboard.writeText($('dlg-text').value); };
+$('dlg-apply').onclick = () => {
+  try { p = merge(DEFAULTS, JSON.parse($('dlg-text').value)); syncInputs(); writeHash(); schedule(); $('dlg').close(); toast('Escenario aplicado.'); }
+  catch (e) { alert('JSON inválido: ' + e.message); }
+};
+
+/* ---------- Simulación ---------- */
+let R = null, timer = null;
+function schedule() { clearTimeout(timer); timer = setTimeout(run, 120); }
+function run() {
+  R = simular(p);
+  renderKPI(); renderStays(); renderDecomp(); renderHist(); renderFirmas(); renderCheck();
+  setupMap();
+}
+
+/* ---------- Tablas ---------- */
+function delta(a, b, fmt, goodDown) {
+  const d = b - a; if (Math.abs(d) < 1e-9) return '<span class="muted">0</span>';
+  const cls = (d < 0) === !!goodDown ? 'down' : 'up';
+  return `<span class="${cls}">${d > 0 ? '+' : '−'}${fmt(Math.abs(d))}</span>`;
+}
+function renderKPI() {
+  const [A, B] = R.reg;
+  $('nreps').textContent = f0.format(p.reps);
+  const rows = [
+    ['Clientes por ruta N', A.N, B.N, (v) => f1.format(v), null],
+    ['T planeado (h)', A.Tplan, B.Tplan, (v) => h(v), null],
+    ['T real promedio (h)', A.Treal, B.Treal, (v) => h(v), true],
+    ['T real, rango 5–95% (h)', null, null, null, null, `${h(A.Treal5)}–${h(A.Treal95)}`, `${h(B.Treal5)}–${h(B.Treal95)}`],
+    ['Error del plan: plan − real (min)', A.sesgo, B.sesgo, (v) => f0.format(v), null],
+    ['Asertividad ruta-día', A.asertividad, B.asertividad, (v) => f1.format(v * 100) + '%', null],
+    ['Stay planeado por cliente (min)', A.shatCliente, B.shatCliente, (v) => f1.format(v), null],
+    ['Stay medido hoy por resta (min)', A.measCliente, B.measCliente, (v) => f1.format(v), null],
+    ['Holgura consumida por ruta (min)', A.comp.holgura, B.comp.holgura, (v) => f0.format(v), true],
+    ['Historial usado para entrenar', A.usados, B.usados, (v) => f0.format(v * 100) + '%', null],
+  ];
+  $('kpi').innerHTML = `<thead><tr><th></th><th class="ca">Antes · anterior</th><th class="cb">Después · robusto</th><th>Δ</th></tr></thead><tbody>` +
+    rows.map(([l, a, b, fmt, good, sa, sb]) => fmt
+      ? `<tr><td>${l}</td><td class="mono">${fmt(a)}</td><td class="mono">${fmt(b)}</td><td class="mono">${good === null ? fmtDelta(a, b, fmt) : delta(a, b, fmt, good)}</td></tr>`
+      : `<tr><td>${l}</td><td class="mono">${sa}</td><td class="mono">${sb}</td><td></td></tr>`).join('') + '</tbody>';
+}
+function fmtDelta(a, b, fmt) { const d = b - a; return Math.abs(d) < 1e-9 ? '<span class="muted">0</span>' : (d > 0 ? '+' : '−') + fmt(Math.abs(d)); }
+
+function renderFirmas() {
+  const [A, B] = R.reg;
+  const arrow = (d, eps) => (Math.abs(d) < eps ? '≈' : d > 0 ? '↑' : '↓');
+  const obs = { N: p.oN1 - p.oN0, P: (p.oP1 - p.oP0) * 60, R: (p.oR1 - p.oR0) * 60 };
+  const sim = { N: B.N - A.N, P: B.Tplan - A.Tplan, R: B.Treal - A.Treal };
+  const tipos = [
+    ['Sólo el estimador (sin H1 ni H2)', '≈', '↓', '≈', 'El plan baja; la realidad no se mueve. El error del plan crece.'],
+    ['H1 · el chofer llenaba la holgura', '≈', '↓', '↓', 'Plan y real bajan juntos; la caída real sale del stay, no del traslado.'],
+    ['H2 · el planificador decide N', '↑', '≈', '↑', 'Caben más clientes; la jornada real sube o se queda.'],
+  ];
+  const ninput = (k) => `<input type="number" step="${PARAMS.find((r) => r[1] === k)[6]}" data-k="${k}" value="${p[k]}">`;
+  $('firmas').innerHTML = `<thead><tr><th>Hipótesis</th><th>Δ N</th><th>Δ T plan</th><th>Δ T real</th><th>Qué la delata</th></tr></thead><tbody>` +
+    tipos.map((t) => `<tr><td>${t[0]}</td><td>${t[1]}</td><td>${t[2]}</td><td>${t[3]}</td><td class="muted" style="white-space:normal">${t[4]}</td></tr>`).join('') +
+    `<tr><td><b>Simulado ahora</b></td><td class="mono">${arrow(sim.N, 0.05)} ${f1.format(sim.N)}</td><td class="mono">${arrow(sim.P, 5)} ${h(sim.P)} h</td><td class="mono">${arrow(sim.R, 5)} ${h(sim.R)} h</td><td class="muted">con los interruptores del panel</td></tr>` +
+    `<tr><td><b>Observado</b> <span class="muted">(inventado)</span></td><td class="mono">${arrow(obs.N, 0.05)} ${f1.format(obs.N)}</td><td class="mono">${arrow(obs.P, 5)} ${h(obs.P)} h</td><td class="mono">${arrow(obs.R, 5)} ${h(obs.R)} h</td><td></td></tr>` +
+    `<tr><td class="muted">Cifras observadas</td><td>${ninput('oN0')} → ${ninput('oN1')}</td><td>${ninput('oP0')} → ${ninput('oP1')} h</td><td>${ninput('oR0')} → ${ninput('oR1')} h</td><td></td></tr></tbody>`;
+  $('firmas').querySelectorAll('input[data-k]').forEach((el) => el.addEventListener('change', () => set(el.dataset.k, clamp(el.dataset.k, +el.value))));
+}
+
+function renderCheck() {
+  const t = R.teoria, A = R.reg[0];
+  $('check').innerHTML = t.valido
+    ? `E[T real] analítico = <span class="mono">${h(t.ET)} h</span>; Monte Carlo = <span class="mono">${h(A.Treal)} h</span> (${f2.format((A.Treal / t.ET - 1) * 100)}%). E[S] verdadero = <span class="mono">${f1.format(t.ES)} min</span>.`
+    : `La fórmula analítica sólo aplica con H1 y H2 apagadas (si no, el T real depende del plan). E[S] verdadero sin holgura = <span class="mono">${f1.format(t.ES)} min</span>. Pruebas del motor: <span class="mono">node ruta/prueba.js</span>.`;
+}
+
+/* ---------- Gráficas SVG ---------- */
+function el(tag, attrs, parent, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function hbars(svg, rows, unit) {
+  svg.innerHTML = '';
+  const W = 560, left = 190, right = 60, max = Math.max(...rows.map((r) => r[1])) * 1.05, bh = 26;
+  svg.setAttribute('viewBox', `0 0 ${W} ${rows.length * (bh + 10) + 10}`);
+  rows.forEach(([label, v, color], i) => {
+    const y = 8 + i * (bh + 10), w = (W - left - right) * v / max;
+    el('text', { x: left - 8, y: y + bh / 2 + 4, 'text-anchor': 'end' }, svg, label);
+    el('rect', { x: left, y, width: Math.max(1, w), height: bh, rx: 3, fill: color }, svg);
+    el('text', { x: left + w + 6, y: y + bh / 2 + 4, style: 'fill:var(--ink);font-family:var(--f-mono)' }, svg, f1.format(v) + unit);
+  });
+}
+function renderStays() {
+  const [A, B] = R.reg;
+  hbars($('stays'), [
+    ['Verdadero (historial)', R.hist.real, 'var(--stay)'],
+    ['Medido por resta', R.hist.medido, 'var(--extra)'],
+    ['Predicho · anterior', A.shatCliente, 'var(--a)'],
+    ['Predicho · robusto', B.shatCliente, 'var(--b)'],
+  ], ' min');
+}
+const PARTS = [
+  ['viajePlan', 'Traslados planeados', '--travel'], ['viajeExtra', 'Exceso de tráfico', '--extra'], ['U', 'Eventos no productivos', '--evento'],
+  ['comida', 'Comida planeada', '--meal'], ['comidaExtra', 'Exceso de comida', '--mealx'], ['base', 'Stay necesario', '--stay'], ['holgura', 'Holgura consumida (H1)', '--hol'],
+];
+function renderDecomp() {
+  const svg = $('decomp'); svg.innerHTML = '';
+  const W = 560, left = 120, right = 50, bh = 34;
+  const rows = [['Antes · real', R.reg[0]], ['Después · real', R.reg[1]]];
+  const max = Math.max(...rows.map(([, g]) => g.Treal)) * 1.04;
+  svg.setAttribute('viewBox', `0 0 ${W} ${rows.length * (bh + 18) + 20}`);
+  rows.forEach(([label, g], i) => {
+    const y = 10 + i * (bh + 18);
+    el('text', { x: left - 8, y: y + bh / 2 + 4, 'text-anchor': 'end' }, svg, label);
+    let x = left;
+    PARTS.forEach(([k, name, c]) => {
+      const v = Math.max(0, g.comp[k]), w = (W - left - right) * v / max;
+      const r = el('rect', { x, y, width: w, height: bh, fill: `var(${c})`, stroke: 'var(--surface)', 'stroke-width': 1 }, svg);
+      el('title', {}, r, `${name}: ${h(v)} h`);
+      x += w;
+    });
+    el('text', { x: x + 6, y: y + bh / 2 + 4, style: 'fill:var(--ink);font-family:var(--f-mono)' }, svg, h(g.Treal));
+  });
+  $('decomp-legend').innerHTML = PARTS.map(([, n, c]) => `<span><span class="sw" style="background:var(${c})"></span>${n}</span>`).join('');
+}
+function renderHist() {
+  const svg = $('hist'); svg.innerHTML = '';
+  const W = 1000, H = 300, L = 50, Rr = 20, T = 14, B = 34, bins = 50;
+  const all = [...R.reg[0]._Treal, ...R.reg[1]._Treal, ...R.reg[0]._Tplan, ...R.reg[1]._Tplan].sort((a, b) => a - b);
+  let lo = Math.min(all[Math.floor(all.length * 0.003)], p.Tmax), hi = Math.max(all[Math.floor(all.length * 0.997)], p.Tmax);
+  const pad = (hi - lo) * 0.04; lo -= pad; hi += pad;
+  const bw = (hi - lo) / bins;
+  const hist = (arr) => { const c = new Array(bins).fill(0); for (const v of arr) { const b = Math.floor((v - lo) / bw); if (b >= 0 && b < bins) c[b]++; } return c.map((x) => x / arr.length); };
+  const S = [[R.reg[0]._Treal, 'var(--a)', true], [R.reg[1]._Treal, 'var(--b)', true], [R.reg[0]._Tplan, 'var(--a)', false], [R.reg[1]._Tplan, 'var(--b)', false]].map(([a, c, f]) => [hist(a), c, f]);
+  const ymax = Math.max(...S.flatMap(([c]) => c)) * 1.08;
+  const X = (v) => L + (W - L - Rr) * (v - lo) / (hi - lo), Y = (v) => H - B - (H - B - T) * v / ymax;
+  for (let t = Math.ceil(lo / 60); t <= Math.floor(hi / 60); t++) {
+    el('line', { x1: X(t * 60), x2: X(t * 60), y1: T, y2: H - B, stroke: 'var(--grid)' }, svg);
+    el('text', { x: X(t * 60), y: H - B + 18, 'text-anchor': 'middle' }, svg, t + ' h');
+  }
+  el('line', { x1: L, x2: W - Rr, y1: H - B, y2: H - B, stroke: 'var(--line)' }, svg);
+  S.forEach(([c, color, fill]) => {
+    let d = `M${X(lo)},${Y(0)}`;
+    c.forEach((v, i) => { d += `L${X(lo + i * bw)},${Y(v)}L${X(lo + (i + 1) * bw)},${Y(v)}`; });
+    d += `L${X(hi)},${Y(0)}`;
+    el('path', fill ? { d: d + 'Z', fill: color, 'fill-opacity': 0.35, stroke: color, 'stroke-width': 1 } : { d, fill: 'none', stroke: color, 'stroke-width': 2, 'stroke-dasharray': '5 3' }, svg);
+  });
+  el('line', { x1: X(p.Tmax), x2: X(p.Tmax), y1: T, y2: H - B, stroke: 'var(--bad)', 'stroke-width': 1.5 }, svg);
+  el('text', { x: X(p.Tmax) + 4, y: T + 34, style: 'fill:var(--bad)' }, svg, 'jornada máx.');
+  el('text', { x: W - Rr, y: H - 4, 'text-anchor': 'end' }, svg, 'Tiempo de mercado');
+  const lg = [['Real · anterior', 'var(--a)', 1], ['Real · robusto', 'var(--b)', 1], ['Plan · anterior', 'var(--a)', 0], ['Plan · robusto', 'var(--b)', 0]];
+  lg.forEach(([t, c, f], i) => {
+    const x = L + 10 + i * 150;
+    if (f) el('rect', { x, y: T, width: 14, height: 10, fill: c, 'fill-opacity': 0.4, stroke: c }, svg);
+    else el('line', { x1: x, x2: x + 14, y1: T + 5, y2: T + 5, stroke: c, 'stroke-width': 2, 'stroke-dasharray': '4 2' }, svg);
+    el('text', { x: x + 20, y: T + 10 }, svg, t);
+  });
+}
+
+/* ---------- Mapa animado ---------- */
+const MW = 1000, MH = 440;
+const P2 = (pt) => ({ x: pt.x * MW, y: pt.y * MH });
+let anim = { t: 0, playing: false, last: 0, end: 0, trucks: [], bars: [] };
+function pos(m, i) { return i < 0 ? P2(m.uo) : P2(m.pts[i]); }
+function setupMap() {
+  const svg = $('map'); svg.innerHTML = '';
+  const m = R.mapa, show = R.show, nAll = Math.max(show[0].n, show[1].n);
+  // calles de fondo
+  for (let x = 0; x <= MW; x += 50) el('line', { x1: x, x2: x, y1: 0, y2: MH, stroke: 'var(--grid)' }, svg);
+  for (let y = 0; y <= MH; y += 50) el('line', { x1: 0, x2: MW, y1: y, y2: y, stroke: 'var(--grid)' }, svg);
+  const uo = P2(m.uo);
+  // tramos
+  el('line', { x1: uo.x, y1: uo.y, x2: pos(m, 0).x, y2: pos(m, 0).y, stroke: 'var(--travel)', 'stroke-width': 2, 'stroke-dasharray': '6 5' }, svg);
+  el('line', { x1: uo.x, y1: uo.y + 8, x2: pos(m, nAll - 1).x, y2: pos(m, nAll - 1).y, stroke: 'var(--travel)', 'stroke-width': 2, 'stroke-dasharray': '2 5' }, svg);
+  for (let i = 1; i < 40; i++) {
+    const a = pos(m, i - 1), b = pos(m, i), on = i < nAll;
+    el('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: on ? 'var(--travel)' : 'var(--grid)', 'stroke-width': on ? 2.5 : 1.5 }, svg);
+  }
+  el('text', { x: (uo.x + pos(m, 0).x) / 2, y: (uo.y + pos(m, 0).y) / 2 - 8, 'text-anchor': 'middle' }, svg, 'STEM₁');
+  // UO
+  el('rect', { x: uo.x - 22, y: uo.y - 22, width: 44, height: 44, rx: 4, fill: 'var(--surface)', stroke: 'var(--ink)', 'stroke-width': 2 }, svg);
+  el('text', { x: uo.x, y: uo.y + 5, 'text-anchor': 'middle', style: 'fill:var(--ink);font-weight:600' }, svg, 'UO');
+  // clientes con dos barras (anterior arriba, robusto abajo). Escala: 1 min = 1.4 px
+  const k = 1.4;
+  anim.bars = [];
+  for (let i = 0; i < 40; i++) {
+    const c = pos(m, i), on = i < nAll;
+    el('circle', { cx: c.x, cy: c.y, r: 11, fill: 'var(--surface)', stroke: on ? 'var(--ink)' : 'var(--line)', 'stroke-width': 1.5 }, svg);
+    el('text', { x: c.x, y: c.y + 4, 'text-anchor': 'middle', style: `font-size:10px;fill:${on ? 'var(--ink)' : 'var(--line)'}` }, svg, i + 1);
+    if (!on) continue;
+    const rowBars = show.map((s, r) => {
+      const st = s.ev.find((e) => e.k === 'stay' && e.i === i);
+      if (!st) return null;
+      const y = c.y + 14 + r * 7, color = r ? 'var(--b)' : 'var(--a)';
+      el('rect', { x: c.x - 12, y, width: st.shat * k, height: 5, fill: 'none', stroke: color, 'stroke-width': 1 }, svg);
+      const fill = el('rect', { x: c.x - 12, y, width: 0, height: 5, fill: color }, svg);
+      return { st, fill };
+    });
+    anim.bars.push(...rowBars.filter(Boolean));
+  }
+  // comida
+  show.forEach((s, r) => {
+    const e = s.ev.find((x) => x.k === 'comida');
+    if (e) { const c = pos(m, e.i); el('text', { x: c.x + 14, y: c.y - 10 - r * 12, style: `font-size:11px;fill:${r ? 'var(--b)' : 'var(--a)'}` }, svg, 'comida'); }
+  });
+  // camiones
+  anim.trucks = show.map((s, r) => {
+    const g = el('g', {}, svg);
+    el('rect', { x: -10, y: -7, width: 20, height: 14, rx: 3, fill: r ? 'var(--b)' : 'var(--a)', stroke: 'var(--surface)', 'stroke-width': 1.5 }, g);
+    const ring = el('circle', { r: 16, fill: 'none', stroke: 'var(--evento)', 'stroke-width': 2, visibility: 'hidden' }, g);
+    return { g, ring, ev: s.ev, off: r ? 7 : -7 };
+  });
+  anim.end = Math.max(...show.map((s) => s.Treal));
+  const [a, b] = show;
+  $('daysum').innerHTML = `Este día: <span class="ca">anterior</span> planea ${h(a.Tplan)} h y tarda ${h(a.Treal)} h (${a.n} clientes); ` +
+    `<span class="cb">robusto</span> planea ${h(b.Tplan)} h y tarda ${h(b.Treal)} h (${b.n} clientes). Salida a las 07:00.`;
+  anim.t = Math.min(anim.t, anim.end);
+  drawFrame();
+}
+function drawFrame() {
+  const t = anim.t, m = R.mapa;
+  anim.trucks.forEach((tr) => {
+    let e = tr.ev.find((x) => t >= x.t0 && t < x.t1) || tr.ev[tr.ev.length - 1];
+    if (t >= tr.ev[tr.ev.length - 1].t1) e = tr.ev[tr.ev.length - 1];
+    let x, y, ring = false;
+    if (e.k === 'mov' || e.k === 'evento') {
+      const a = pos(m, e.a), b = pos(m, e.b);
+      const u = e.k === 'evento' ? 0.5 : e.f0 + (e.f1 - e.f0) * Math.min(1, Math.max(0, (t - e.t0) / Math.max(1e-9, e.t1 - e.t0)));
+      x = a.x + (b.x - a.x) * u; y = a.y + (b.y - a.y) * u; ring = e.k === 'evento';
+    } else { const c = pos(m, e.i); x = c.x; y = c.y; }
+    tr.g.setAttribute('transform', `translate(${x},${y + tr.off})`);
+    tr.ring.setAttribute('visibility', ring ? 'visible' : 'hidden');
+  });
+  anim.bars.forEach(({ st, fill }) => { fill.setAttribute('width', Math.max(0, Math.min(t, st.t1) - st.t0) * 1.4); });
+  $('clock').textContent = hhmm(t);
+}
+function loop(ts) {
+  if (!anim.playing) return;
+  const dt = anim.last ? (ts - anim.last) / 1000 : 0; anim.last = ts;
+  anim.t = Math.min(anim.end, anim.t + dt * +$('speed').value);
+  drawFrame();
+  if (anim.t >= anim.end) { anim.playing = false; $('b-play').textContent = '▶ Reproducir'; return; }
+  requestAnimationFrame(loop);
+}
+$('b-play').onclick = () => {
+  if (anim.t >= anim.end) anim.t = 0;
+  anim.playing = !anim.playing; anim.last = 0;
+  $('b-play').textContent = anim.playing ? '❚❚ Pausa' : '▶ Reproducir';
+  if (anim.playing) requestAnimationFrame(loop);
+};
+$('b-restart').onclick = () => { anim.t = 0; drawFrame(); };
+$('b-day').onclick = () => { anim.t = 0; set('dia', p.dia % 999 + 1); };
+
+buildControls(); syncInputs(); run();
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) { anim.t = anim.end; drawFrame(); }
+})();
+</script>
+</body>
+</html>
