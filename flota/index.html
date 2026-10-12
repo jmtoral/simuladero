@@ -1,0 +1,1064 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Simulador de una ruta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.collapse{visibility:collapse}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.mt-2{margin-top:.5rem}.flex{display:flex}.table{display:table}.grid{display:grid}.flex-none{flex:none}.border-collapse{border-collapse:collapse}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-end{align-items:flex-end}.items-center{align-items:center}.items-baseline{align-items:baseline}.justify-between{justify-content:space-between}.gap-1{gap:.25rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-5{gap:1.25rem}.gap-6{gap:1.5rem}.text-wrap{text-wrap:wrap}.border{border-width:1px}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.uppercase{text-transform:uppercase}.tabular-nums{--tw-numeric-spacing:tabular-nums;font-variant-numeric:var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction)}.outline{outline-style:solid}.transition{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,-webkit-backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter,-webkit-backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.ease-in-out{transition-timing-function:cubic-bezier(.4,0,.2,1)}@media (min-width:768px){.md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.md\:p-5{padding:1.25rem}}@media (min-width:1024px){.lg\:grid-cols-\[340px_minmax\(0\2c 1fr\)\]{grid-template-columns:340px minmax(0,1fr)}}@media (min-width:1280px){.xl\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}</style>
+<style>
+/* Layout: panel de controles fijo a la izquierda (340px), lienzo de resultados a la derecha; una columna en móvil. */
+:root {
+  --bg: #f4f6f7; --surface: #ffffff; --surface-2: #f8f9fa; --ink: #1a1f24; --muted: #5b646d; --line: #dde2e6;
+  --s0: #7d8894; --s1: #e5732a; --s2: #2c6bd9; --save: #1d8a4b; --save-soft: #d7f0e0; --tmax: #d4372c;
+  --unseen: #e3e7ea; --stay: #f6d2b5; --fixed: #c2c9cf; --travel: #9fa9b2; --meal: #dfe3e6; --slack: #eef1f3;
+  --focus: #2c6bd9;
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111417; --surface: #181c20; --surface-2: #1d2226; --ink: #e5e9ec; --muted: #98a2ac; --line: #2a3037;
+  --s0: #9ba6b1; --s1: #f08a45; --s2: #5d92f2; --save: #45bd75; --save-soft: #17382a; --tmax: #f05a4e;
+  --unseen: #2a3036; --stay: #6b4428; --fixed: #4a535c; --travel: #5f6973; --meal: #353c43; --slack: #22282d;
+  --focus: #5d92f2; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111417; --surface: #181c20; --surface-2: #1d2226; --ink: #e5e9ec; --muted: #98a2ac; --line: #2a3037;
+  --s0: #9ba6b1; --s1: #f08a45; --s2: #5d92f2; --save: #45bd75; --save-soft: #17382a; --tmax: #f05a4e;
+  --unseen: #2a3036; --stay: #6b4428; --fixed: #4a535c; --travel: #5f6973; --meal: #353c43; --slack: #22282d;
+  --focus: #5d92f2; color-scheme: dark; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.45; }
+.wrap { padding-inline: 16px; padding-block: 20px 48px; max-width: 1480px; margin: 0 auto; }
+@media (min-width: 768px) { .wrap { padding-inline: 28px; } }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; letter-spacing: -0.005em; }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.num { font-variant-numeric: tabular-nums; }
+.num { font-feature-settings: "tnum"; }
+.muted { color: var(--muted); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+.eyebrow { font-family: var(--f-display); font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.hr { border-top: 1px solid var(--line); }
+.c-s0 { color: var(--s0); } .c-s1 { color: var(--s1); } .c-s2 { color: var(--s2); } .c-save { color: var(--save); } .c-tmax { color: var(--tmax); }
+.formula { font-family: var(--f-mono); font-size: 14px; line-height: 1.6; overflow-x: auto; white-space: nowrap; }
+.hl-stay { color: var(--s1); font-weight: 500; background: color-mix(in srgb, var(--s1) 12%, transparent); padding: 1px 4px; border-radius: 3px; }
+
+/* Controles */
+.ctl label { font-size: 13px; }
+.ctl .sym { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); }
+input[type=range] { width: 100%; accent-color: var(--ink); height: 18px; }
+input[type=number] { width: 84px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; font-family: var(--f-mono); font-size: 12.5px; text-align: right; color: var(--ink); }
+input:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ctl.disabled { opacity: .45; }
+.switch { position: relative; width: 38px; height: 22px; border-radius: 11px; background: var(--fixed); border: 0; cursor: pointer; flex: none; transition: background .15s; }
+.switch[aria-checked="true"] { background: var(--ink); }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); transition: transform .15s; }
+.switch[aria-checked="true"]::after { transform: translateX(16px); }
+.btn { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 4px; padding: 6px 10px; font-size: 13px; cursor: pointer; }
+.btn:hover { border-color: var(--muted); }
+aside .scroll { max-height: none; }
+@media (min-width: 1024px) { aside { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; } aside .scroll { max-height: calc(100vh - 24px); overflow-y: auto; } }
+
+/* Indicador */
+.busy { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--s1); animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+.stale { opacity: .55; transition: opacity .2s; }
+
+/* KPIs */
+.scard { border-top: 3px solid var(--sc); }
+.big { font-family: var(--f-display); font-weight: 700; font-size: 40px; line-height: 1; letter-spacing: -0.02em; }
+table.kpi { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.kpi th, table.kpi td { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+table.kpi th:first-child, table.kpi td:first-child { text-align: left; white-space: normal; }
+table.kpi thead th { font-family: var(--f-display); font-weight: 600; font-size: 13px; }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--muted); }
+.recharts-text { fill: var(--muted); font-size: 11.5px; font-family: var(--f-body); }
+.recharts-cartesian-axis-line, .recharts-cartesian-axis-tick-line { stroke: var(--line); }
+.recharts-default-tooltip { background: var(--surface) !important; border: 1px solid var(--line) !important; border-radius: 4px; font-size: 12px; }
+.recharts-tooltip-label, .recharts-tooltip-item { color: var(--ink) !important; }
+details > summary { cursor: pointer; list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+.chev { transition: transform .15s; display: inline-block; }
+details[open] .chev { transform: rotate(90deg); }
+.ok { color: var(--save); } .bad { color: var(--tmax); }
+.minw0 { min-width: 0; }
+</style>
+
+<div id="root"><div class="wrap"><p class="muted">Cargando simulador…</p></div></div>
+
+<script type="text/plain" id="engine-src">
+/* Motor de simulación: flota vs. calidad de predicción del stay time.
+   JS puro, sin dependencias. Se carga en un Web Worker (blob) y en Node para pruebas. */
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function makeNormal(rand) {
+  let spare = null;
+  return function () {
+    if (spare !== null) { const s = spare; spare = null; return s; }
+    let u = rand(); while (u <= 1e-300) u = rand();
+    const v = rand();
+    const r = Math.sqrt(-2 * Math.log(u));
+    spare = r * Math.sin(2 * Math.PI * v);
+    return r * Math.cos(2 * Math.PI * v);
+  };
+}
+
+function lnParams(mu, sd) {
+  const s2 = Math.log(1 + (sd * sd) / (mu * mu));
+  return { m: Math.log(mu) - s2 / 2, s: Math.sqrt(s2), s2 };
+}
+
+function theory(p) {
+  const muS = p.tFijo + p.tVar * p.muQ + p.muW;
+  const varQpart = p.tVar * p.tVar * p.sdQ * p.sdQ;
+  const varW = p.sdW * p.sdW;
+  const varS = varQpart + varW;
+  const lq = lnParams(p.muQ, p.sdQ), lw = lnParams(p.muW, p.sdW);
+  // Var(E[X|Z1]) = mu^2 (exp(s^2 R^2) - 1)
+  const explQ = p.tVar * p.tVar * p.muQ * p.muQ * (Math.exp(lq.s2 * p.r2Q) - 1);
+  const explW = p.muW * p.muW * (Math.exp(lw.s2 * p.r2W) - 1);
+  let cajas, ml, irr;
+  if (p.knownBoxes) { cajas = varQpart; ml = explW; irr = varW - explW; }
+  else { cajas = 0; ml = explQ + explW; irr = varS - explQ - explW; }
+  return { muS, sdS: Math.sqrt(varS), varS, varQpart, varW, cajas, ml, irr };
+}
+
+/* Genera clientes y predicciones. Arreglos Float32 compartidos por los tres escenarios. */
+function generate(p) {
+  const n = p.D * p.R;
+  const rand = mulberry32(p.seed >>> 0);
+  const N = makeNormal(rand);
+  const lq = lnParams(p.muQ, p.sdQ), lw = lnParams(p.muW, p.sdW);
+  const aQ = Math.sqrt(p.r2Q), bQ = Math.sqrt(1 - p.r2Q);
+  const aW = Math.sqrt(p.r2W), bW = Math.sqrt(1 - p.r2W);
+  const condVarFacQ = Math.exp(lq.s2 * (1 - p.r2Q)) - 1;
+  const condVarFacW = Math.exp(lw.s2 * (1 - p.r2W)) - 1;
+  const halfQ = lq.s2 * (1 - p.r2Q) / 2, halfW = lw.s2 * (1 - p.r2W) / 2;
+  const tv2 = p.tVar * p.tVar;
+  const S = new Float32Array(n), Sh2 = new Float32Array(n), Sh3 = new Float32Array(n), V3 = new Float32Array(n);
+  const th = theory(p);
+  for (let i = 0; i < n; i++) {
+    const z1q = N(), z2q = N(), z1w = N(), z2w = N();
+    const Q = Math.exp(lq.m + lq.s * (aQ * z1q + bQ * z2q));
+    const W = Math.exp(lw.m + lw.s * (aW * z1w + bW * z2w));
+    const s = p.tFijo + p.tVar * Q + W;
+    S[i] = s;
+    const EW = Math.exp(lw.m + lw.s * aW * z1w + halfW);
+    const VW = EW * EW * condVarFacW;
+    if (p.knownBoxes) {
+      Sh2[i] = p.tFijo + p.tVar * Q + p.muW;
+      Sh3[i] = p.tFijo + p.tVar * Q + EW;
+      V3[i] = VW;
+    } else {
+      const EQ = Math.exp(lq.m + lq.s * aQ * z1q + halfQ);
+      Sh2[i] = th.muS;
+      Sh3[i] = p.tFijo + p.tVar * EQ + EW;
+      V3[i] = tv2 * EQ * EQ * condVarFacQ + VW;
+    }
+  }
+  return { n, S, Sh2, Sh3, V3, th };
+}
+
+/* Escenario como accesores: shat(i), v(i). Constantes se pasan como número para velocidad. */
+function scenarioDefs(p, g) {
+  const th = g.th;
+  const s1 = { name: 'Promedio', shatC: th.muS, vC: th.varS };
+  const s2 = p.knownBoxes ? { name: 'Fórmula operativa', shatA: g.Sh2, vC: th.varW }
+                          : { name: 'Fórmula operativa', shatC: th.muS, vC: th.varS };
+  const s3 = { name: 'ML', shatA: g.Sh3, vA: g.V3 };
+  return [s1, s2, s3];
+}
+
+/* Recorre los días con un z dado. Si full=false sólo cuenta violaciones. */
+function buildRoutes(p, g, sc, z, full) {
+  const fixed = p.stem1 + p.comida + p.stem2;
+  const d = p.d, Tmax = p.Tmax, D = p.D;
+  const S = g.S;
+  const shatA = sc.shatA, vA = sc.vA, shatC = sc.shatC, vC = sc.vC;
+  let routes = 0, viol = 0;
+  const nArr = full ? [] : null, TArr = full ? [] : null, bufArr = full ? [] : null;
+  for (let day = 0; day < p.R; day++) {
+    const off = day * D;
+    let n = 0, sh = 0, sv = 0, ss = 0;
+    for (let k = 0; k < D; k++) {
+      const i = off + k;
+      const shi = shatA ? shatA[i] : shatC;
+      const vi = vA ? vA[i] : vC;
+      if (n > 0) {
+        const plan = fixed + sh + shi + n * d + z * Math.sqrt(sv + vi);
+        if (plan > Tmax) {
+          const T = fixed + ss + (n - 1) * d;
+          routes++; if (T > Tmax) viol++;
+          if (full) { nArr.push(n); TArr.push(T); bufArr.push(z * Math.sqrt(sv)); }
+          n = 0; sh = 0; sv = 0; ss = 0;
+        }
+      }
+      n++; sh += shi; sv += vi; ss += S[i];
+    }
+    const T = fixed + ss + (n - 1) * d;
+    routes++; if (T > Tmax) viol++;
+    if (full) { nArr.push(n); TArr.push(T); bufArr.push(z * Math.sqrt(sv)); }
+  }
+  return { routes, viol, nArr, TArr, bufArr };
+}
+
+function calibrate(p, g, sc) {
+  const target = 1 - p.alpha;
+  const rate = (z) => { const r = buildRoutes(p, g, sc, z, false); return r.viol / r.routes; };
+  let lo = 0, hi = 5;
+  if (rate(0) <= target) return { z: 0, capped: false };
+  if (rate(hi) > target) return { z: hi, capped: true };
+  for (let it = 0; it < 20; it++) {
+    const mid = (lo + hi) / 2;
+    if (rate(mid) <= target) hi = mid; else lo = mid;
+  }
+  return { z: hi, capped: false };
+}
+
+/* Rutas detalladas para los primeros K clientes del día 1 (mismo armado first-fit). */
+function sampleRoutes(p, g, sc, z, K) {
+  const fixed = p.stem1 + p.comida + p.stem2;
+  const routes = [];
+  let cur = null;
+  const close = (open) => {
+    const n = cur.stays.length;
+    const T = fixed + cur.ss + (n - 1) * p.d;
+    routes.push({ stays: cur.stays, T, plan: fixed + cur.sh + (n - 1) * p.d, buf: z * Math.sqrt(cur.sv), open: !!open });
+  };
+  for (let i = 0; i < K; i++) {
+    const shi = sc.shatA ? sc.shatA[i] : sc.shatC;
+    const vi = sc.vA ? sc.vA[i] : sc.vC;
+    if (cur) {
+      const n = cur.stays.length;
+      if (fixed + cur.sh + shi + n * p.d + z * Math.sqrt(cur.sv + vi) > p.Tmax) { close(false); cur = null; }
+    }
+    if (!cur) cur = { stays: [], sh: 0, sv: 0, ss: 0 };
+    cur.stays.push(+g.S[i].toFixed(2)); cur.sh += shi; cur.sv += vi; cur.ss += g.S[i];
+  }
+  // La última ruta queda abierta si el siguiente cliente (K) aún cabría en ella
+  if (cur) {
+    let open = false;
+    if (K < p.D) {
+      const shi = sc.shatA ? sc.shatA[K] : sc.shatC, vi = sc.vA ? sc.vA[K] : sc.vC;
+      open = fixed + cur.sh + shi + cur.stays.length * p.d + z * Math.sqrt(cur.sv + vi) <= p.Tmax;
+    }
+    close(open);
+  }
+  return routes;
+}
+
+function quantileSorted(a, q) {
+  if (!a.length) return NaN;
+  const pos = (a.length - 1) * q, lo = Math.floor(pos), hi = Math.ceil(pos);
+  return a[lo] + (a[hi] - a[lo]) * (pos - lo);
+}
+
+function errorStats(g, sc) {
+  const n = g.n, S = g.S;
+  let se = 0, sae = 0, see = 0, ss = 0, sss = 0;
+  for (let i = 0; i < n; i++) {
+    const e = S[i] - (sc.shatA ? sc.shatA[i] : sc.shatC);
+    se += e; sae += Math.abs(e); see += e * e; ss += S[i]; sss += S[i] * S[i];
+  }
+  const bias = se / n, mse = see / n;
+  const varE = mse - bias * bias;
+  const mS = ss / n, varS = sss / n - mS * mS;
+  return { bias, rmse: Math.sqrt(mse), mae: sae / n, varE, varS, r2: 1 - varE / varS, seBias: Math.sqrt(varE / n) };
+}
+
+/* Corrida liviana para pruebas: flota, cumplimiento, sesgo */
+function quickRun(p) {
+  const g = generate(p);
+  const scs = scenarioDefs(p, g);
+  return scs.map((sc) => {
+    const c = calibrate(p, g, sc);
+    const r = buildRoutes(p, g, sc, c.z, false);
+    return { fleet: Math.ceil(r.routes / p.R), compliance: 1 - r.viol / r.routes, z: c.z };
+  });
+}
+
+function hist(values, lo, hi, bins) {
+  const h = new Array(bins).fill(0);
+  const w = (hi - lo) / bins;
+  let total = 0;
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    if (v < lo || v > hi) continue;
+    let b = Math.floor((v - lo) / w); if (b >= bins) b = bins - 1;
+    h[b]++; total++;
+  }
+  return { h, w, total };
+}
+
+function simulate(p, progress) {
+  const t0 = Date.now();
+  progress && progress('Generando clientes');
+  const g = generate(p);
+  const scs = scenarioDefs(p, g);
+  const out = { theory: g.th, scen: [], params: p };
+
+  scs.forEach((sc, k) => {
+    progress && progress('Calibrando colchón: ' + sc.name);
+    const c = calibrate(p, g, sc);
+    const r = buildRoutes(p, g, sc, c.z, true);
+    const nSorted = Float64Array.from(r.nArr).sort();
+    const TSorted = Float64Array.from(r.TArr).sort();
+    let sumN = 0, sumT = 0, sumBuf = 0;
+    for (let i = 0; i < r.routes; i++) { sumN += r.nArr[i]; sumT += r.TArr[i]; sumBuf += r.bufArr[i]; }
+    const meanN = sumN / r.routes, meanT = sumT / r.routes;
+    const fleetRaw = r.routes / p.R;
+    const fleet = Math.ceil(fleetRaw);
+    const slack = p.Tmax - meanT;
+    const es = errorStats(g, sc);
+    out.scen.push({
+      name: sc.name, z: c.z, capped: c.capped,
+      routesTotal: r.routes, fleetRaw, fleet,
+      compliance: 1 - r.viol / r.routes,
+      meanN, p5N: quantileSorted(nSorted, 0.05), p95N: quantileSorted(nSorted, 0.95),
+      meanT, pAlphaT: quantileSorted(TSorted, p.alpha),
+      slack, slackNetH: fleet * slack / 60,
+      meanBuf: sumBuf / r.routes,
+      meanStaySum: (meanT - p.stem1 - p.stem2 - p.comida) - (meanN - 1) * p.d,
+      meanTravel: (meanN - 1) * p.d,
+      err: es,
+      _n: r.nArr, _T: r.TArr,
+    });
+  });
+
+  // Histograma de T (bins compartidos)
+  let tMin = Infinity, tMax = -Infinity;
+  out.scen.forEach((s) => { for (const t of s._T) { if (t < tMin) tMin = t; if (t > tMax) tMax = t; } });
+  // Recorta cola extrema para legibilidad: usa P0.1 y P99.9 combinados
+  const allT = []; out.scen.forEach((s) => { for (let i = 0; i < s._T.length; i += Math.max(1, Math.floor(s._T.length / 20000))) allT.push(s._T[i]); });
+  allT.sort((a, b) => a - b);
+  let lo = Math.min(quantileSorted(allT, 0.002), p.Tmax), hi = Math.max(quantileSorted(allT, 0.995), p.Tmax);
+  const pad = (hi - lo) * 0.03; lo -= pad; hi += pad;
+  const binsT = 50;
+  const hT = out.scen.map((s) => hist(s._T, lo, hi, binsT));
+  out.histT = [];
+  for (let b = 0; b < binsT; b++) {
+    const x = lo + (b + 0.5) * hT[0].w;
+    out.histT.push({ x, s0: hT[0].h[b] / out.scen[0].routesTotal, s1: hT[1].h[b] / out.scen[1].routesTotal, s2: hT[2].h[b] / out.scen[2].routesTotal });
+  }
+  out.histTRange = [lo, hi];
+
+  // Histograma de clientes por ruta (enteros)
+  let nMax = 0, nMin = Infinity;
+  out.scen.forEach((s) => { for (const v of s._n) { if (v > nMax) nMax = v; if (v < nMin) nMin = v; } });
+  const nLo = Math.max(1, Math.floor(Math.min(...out.scen.map((s) => s.p5N))) - 4);
+  const nHi = Math.ceil(Math.max(...out.scen.map((s) => s.p95N))) + 4;
+  const cnt = out.scen.map(() => new Map());
+  out.scen.forEach((s, k) => { for (const v of s._n) cnt[k].set(v, (cnt[k].get(v) || 0) + 1); });
+  out.histN = [];
+  for (let v = nLo; v <= nHi; v++) {
+    out.histN.push({ x: v, s0: (cnt[0].get(v) || 0) / out.scen[0].routesTotal, s1: (cnt[1].get(v) || 0) / out.scen[1].routesTotal, s2: (cnt[2].get(v) || 0) / out.scen[2].routesTotal });
+  }
+
+  // Histograma de errores e (bins compartidos, rango P0.5–P99.5 combinado)
+  const step = Math.max(1, Math.floor(g.n / 30000));
+  const sampleE = [];
+  for (let i = 0; i < g.n; i += step) scs.forEach((sc) => sampleE.push(g.S[i] - (sc.shatA ? sc.shatA[i] : sc.shatC)));
+  sampleE.sort((a, b) => a - b);
+  const eLo = quantileSorted(sampleE, 0.005), eHi = quantileSorted(sampleE, 0.99);
+  const binsE = 60, wE = (eHi - eLo) / binsE;
+  const hE = scs.map(() => new Array(binsE).fill(0));
+  for (let i = 0; i < g.n; i++) {
+    for (let k = 0; k < 3; k++) {
+      const sc = scs[k];
+      const e = g.S[i] - (sc.shatA ? sc.shatA[i] : sc.shatC);
+      if (e < eLo || e > eHi) continue;
+      let b = Math.floor((e - eLo) / wE); if (b >= binsE) b = binsE - 1;
+      hE[k][b]++;
+    }
+  }
+  out.histE = [];
+  for (let b = 0; b < binsE; b++) out.histE.push({ x: eLo + (b + 0.5) * wE, s0: hE[0][b] / g.n, s1: hE[1][b] / g.n, s2: hE[2][b] / g.n });
+  out.histERange = [eLo, eHi];
+
+  // Muestra de dispersión (1,000 clientes)
+  const m = Math.min(1000, g.n);
+  out.scatter = [];
+  for (let i = 0; i < m; i++) out.scatter.push({ s: g.S[i], h2: scs[1].shatA ? scs[1].shatA[i] : scs[1].shatC, h3: g.Sh3[i] });
+
+  // Muestra de rutas para el mapa esquemático: los mismos primeros K clientes del día 1
+  const nRoutesSample = 16;
+  const K = Math.min(p.D, Math.max(1, Math.round(nRoutesSample * out.scen[0].meanN)));
+  out.sample = { K, routes: scs.map((sc, k) => sampleRoutes(p, g, sc, out.scen[k].z, K)) };
+
+  out.scen.forEach((s) => { delete s._n; delete s._T; });
+  out.elapsedMs = Date.now() - t0;
+  return out;
+}
+
+/* Pruebas de consistencia. Usan una versión reducida si D·R es grande. */
+function runTests(p, main) {
+  const res = [];
+  const maxN = 200000;
+  const q = Object.assign({}, p);
+  if (q.D * q.R > maxN) q.R = Math.max(5, Math.floor(maxN / q.D));
+  const sizeNote = q.R !== p.R ? `Con D = ${q.D.toLocaleString('es-MX')} y R reducido a ${q.R} días.` : '';
+
+  // 1
+  {
+    const r = quickRun(Object.assign({}, q, { knownBoxes: false, r2Q: 0, r2W: 0 }));
+    const ok = r[0].fleet === r[1].fleet && r[1].fleet === r[2].fleet;
+    res.push({ id: 1, ok, title: 'Sin información (cajas desconocidas, R²_Q = R²_W = 0): los tres escenarios dan la misma flota',
+      detail: `Flotas: ${r.map((x) => x.fleet).join(' / ')} vehículos. ${sizeNote}` });
+  }
+  // 2
+  {
+    const r = quickRun(Object.assign({}, q, { knownBoxes: true, r2W: 0 }));
+    const ok = r[1].fleet === r[2].fleet && Math.abs(r[1].z - r[2].z) < 1e-6;
+    res.push({ id: 2, ok, title: 'Cajas conocidas y R²_W = 0: ML coincide con la fórmula operativa',
+      detail: `Flota fórmula ${r[1].fleet}, ML ${r[2].fleet}; z ${r[1].z.toFixed(3)} vs ${r[2].z.toFixed(3)}. ${sizeNote}` });
+  }
+  // 3
+  {
+    const f = [0, 0.5, 0.9].map((r2) => quickRun(Object.assign({}, q, { r2W: r2 }))[2].fleet);
+    const ok = f[1] <= f[0] && f[2] <= f[1];
+    res.push({ id: 3, ok, title: 'La flota ML no aumenta al subir R²_W (0 → 0.5 → 0.9)',
+      detail: `Flota ML: ${f.join(' → ')} vehículos. ${sizeNote}` });
+  }
+  // 4
+  {
+    const dev = main.scen.map((s) => s.compliance - p.alpha);
+    const ok = dev.every((x) => Math.abs(x) <= 0.01);
+    const discrete = main.scen.map((s, k) => (s.p95N - s.p5N) < 1 ? k : -1).filter((k) => k >= 0 && Math.abs(dev[k]) > 0.01);
+    let note = '';
+    if (discrete.length) note = ' Los escenarios ' + discrete.map((k) => main.scen[k].name).join(', ') +
+      ' arman rutas de tamaño fijo: al mover z, N cambia de a un cliente y el cumplimiento salta en escalones, así que no siempre puede quedar a ±1 pp de α.';
+    res.push({ id: 4, ok, title: 'Cumplimiento observado dentro de ±1 pp de α',
+      detail: main.scen.map((s) => `${s.name} ${(s.compliance * 100).toFixed(2)}%`).join(' · ') + ` (α = ${(p.alpha * 100).toFixed(1)}%).` + note });
+  }
+  // 5
+  {
+    const ok = main.scen.every((s) => Math.abs(s.err.bias) <= 4 * s.err.seBias + 1e-3);
+    res.push({ id: 5, ok, title: 'Media de e ≈ 0 (predictores insesgados)',
+      detail: main.scen.map((s) => `${s.name} ${s.err.bias.toFixed(3)} min (±${(4 * s.err.seBias).toFixed(3)})`).join(' · ') + '. Tolerancia: 4 errores estándar.' });
+  }
+  // 6
+  {
+    const th = main.theory;
+    const emp = main.scen[0].err.varS;
+    const rel = emp / th.varS - 1;
+    // Error estándar relativo teórico de la varianza muestral (colas lognormales)
+    const kurtExcess = (mu, sd) => { const s2 = Math.log(1 + sd * sd / (mu * mu)); return Math.exp(4 * s2) + 2 * Math.exp(3 * s2) + 3 * Math.exp(2 * s2) - 6; };
+    const vq = th.varQpart, vw = th.varW;
+    const mu4c = (v, k) => (k + 3) * v * v; // cuarto momento central
+    const varOfVar = (mu4c(vq, kurtExcess(p.muQ, p.sdQ)) - vq * vq + mu4c(vw, kurtExcess(p.muW, p.sdW)) - vw * vw + 4 * vq * vw) / (p.D * p.R);
+    const relSE = Math.sqrt(varOfVar) / th.varS;
+    const ok = Math.abs(rel) <= 0.03;
+    res.push({ id: 6, ok, title: 'Var(S) empírica = t_var²·σ_Q² + σ_W² (±3%)',
+      detail: `Empírica ${emp.toFixed(1)} min², teórica ${th.varS.toFixed(1)} min² (${rel >= 0 ? '+' : ''}${(rel * 100).toFixed(2)}%). Error estándar relativo esperado por colas lognormales: ±${(relSE * 100).toFixed(1)}%` +
+        (ok ? '.' : '; con colas pesadas la varianza muestral converge lento y la desviación puede ser sólo ruido de muestreo. Sube D o R para comprobarlo.') });
+  }
+  return res;
+}
+
+const DEFAULTS = {
+  Tmax: 600, alpha: 0.95, stem1: 30, stem2: 30, d: 10, comida: 45,
+  tFijo: 4, tVar: 0.3, muQ: 20, sdQ: 30, muW: 5, sdW: 10,
+  knownBoxes: true, r2Q: 0.7, r2W: 0.5, D: 6000, R: 30, seed: 42,
+};
+
+if (typeof module !== 'undefined') module.exports = { simulate, runTests, quickRun, theory, DEFAULTS };
+
+/* Motor de una sola ruta. Se concatena después de engine.js (usa mulberry32, makeNormal, lnParams, theory, generate, scenarioDefs, quantileSorted). */
+
+function streamCap(p) {
+  const avail = p.Tmax - p.stem1 - p.stem2 - p.comida + p.d;
+  const per = p.d + Math.max(0.25, p.tFijo + 0.05 * p.tVar * p.muQ + 0.05 * p.muW);
+  return Math.max(10, Math.min(300, Math.ceil(avail / per) + 8));
+}
+
+/* Arma sólo la primera ruta de cada flujo de clientes (una réplica = una ruta). */
+function firstRoutes(p, g, sc, z, full) {
+  const fixed = p.stem1 + p.comida + p.stem2, L = p.D;
+  let viol = 0, trunc = 0;
+  const N = full ? new Int32Array(p.R) : null, T = full ? new Float64Array(p.R) : null, B = full ? new Float64Array(p.R) : null;
+  for (let r = 0; r < p.R; r++) {
+    const off = r * L;
+    let n = 0, sh = 0, sv = 0, ss = 0, closed = false;
+    for (let k = 0; k < L; k++) {
+      const i = off + k;
+      const shi = sc.shatA ? sc.shatA[i] : sc.shatC, vi = sc.vA ? sc.vA[i] : sc.vC;
+      if (n > 0 && fixed + sh + shi + n * p.d + z * Math.sqrt(sv + vi) > p.Tmax) { closed = true; break; }
+      n++; sh += shi; sv += vi; ss += g.S[i];
+    }
+    if (!closed) trunc++;
+    const t = fixed + ss + (n - 1) * p.d;
+    if (t > p.Tmax) viol++;
+    if (full) { N[r] = n; T[r] = t; B[r] = z * Math.sqrt(sv); }
+  }
+  return { viol, trunc, N, T, B };
+}
+
+function calibrateSingle(p, g, sc) {
+  const target = 1 - p.alpha;
+  const rate = (z) => firstRoutes(p, g, sc, z, false).viol / p.R;
+  let lo = 0, hi = 5;
+  if (rate(0) <= target) return { z: 0, capped: false };
+  if (rate(hi) > target) return { z: hi, capped: true };
+  for (let it = 0; it < 22; it++) { const mid = (lo + hi) / 2; if (rate(mid) <= target) hi = mid; else lo = mid; }
+  return { z: hi, capped: false };
+}
+
+/* Ruta de muestra con todo el detalle por cliente. */
+function showcase(p, zs, routeSeed, L) {
+  const rand = mulberry32(routeSeed >>> 0), Nn = makeNormal(rand);
+  const lq = lnParams(p.muQ, p.sdQ), lw = lnParams(p.muW, p.sdW);
+  const aQ = Math.sqrt(p.r2Q), bQ = Math.sqrt(1 - p.r2Q), aW = Math.sqrt(p.r2W), bW = Math.sqrt(1 - p.r2W);
+  const th = theory(p), tv2 = p.tVar * p.tVar;
+  const fQ = Math.exp(lq.s2 * (1 - p.r2Q)) - 1, fW = Math.exp(lw.s2 * (1 - p.r2W)) - 1;
+  const cust = [];
+  for (let i = 0; i < L; i++) {
+    const z1q = Nn(), z2q = Nn(), z1w = Nn(), z2w = Nn();
+    const Q = Math.exp(lq.m + lq.s * (aQ * z1q + bQ * z2q));
+    const W = Math.exp(lw.m + lw.s * (aW * z1w + bW * z2w));
+    const S = p.tFijo + p.tVar * Q + W;
+    const EW = Math.exp(lw.m + lw.s * aW * z1w + lw.s2 * (1 - p.r2W) / 2), VW = EW * EW * fW;
+    let h2, v2, h3, v3, Qhat;
+    if (p.knownBoxes) { Qhat = Q; h2 = p.tFijo + p.tVar * Q + p.muW; v2 = th.varW; h3 = p.tFijo + p.tVar * Q + EW; v3 = VW; }
+    else {
+      const EQ = Math.exp(lq.m + lq.s * aQ * z1q + lq.s2 * (1 - p.r2Q) / 2);
+      Qhat = EQ; h2 = th.muS; v2 = th.varS; h3 = p.tFijo + p.tVar * EQ + EW; v3 = tv2 * EQ * EQ * fQ + VW;
+    }
+    cust.push({ Q, W, S, Qhat, What: EW, h: [th.muS, h2, h3], v: [th.varS, v2, v3] });
+  }
+  const fixed = p.stem1 + p.comida + p.stem2;
+  // Trayectoria acumulada: para k paradas, tiempo planeado (con colchón) y real
+  const traj = [];
+  const acc = [0, 0, 0].map(() => ({ sh: 0, sv: 0 }));
+  let ss = 0;
+  const N = [0, 0, 0], stopped = [false, false, false];
+  for (let k = 1; k <= L; k++) {
+    const c = cust[k - 1];
+    ss += c.S;
+    const row = { k, real: fixed + ss + (k - 1) * p.d };
+    for (let e = 0; e < 3; e++) {
+      acc[e].sh += c.h[e]; acc[e].sv += c.v[e];
+      const base = fixed + acc[e].sh + (k - 1) * p.d;
+      row['p' + e] = base; row['b' + e] = zs[e] * Math.sqrt(acc[e].sv);
+      row['c' + e] = base + row['b' + e];
+      if (!stopped[e]) { if (k === 1 || row['c' + e] <= p.Tmax) N[e] = k; else stopped[e] = true; }
+    }
+    traj.push(row);
+  }
+  const routes = N.map((n, e) => {
+    const r = traj[n - 1];
+    return { n, Treal: r.real, Tplan: r['p' + e], buf: r['b' + e], check: r['c' + e] };
+  });
+  return { cust, traj, N, routes };
+}
+
+function simulateSingle(p, progress) {
+  const t0 = Date.now();
+  const L = streamCap(p);
+  const q = Object.assign({}, p, { D: L, R: p.reps });
+  progress && progress('Generando réplicas');
+  const g = generate(q);
+  const scs = scenarioDefs(q, g);
+  const out = { theory: g.th, params: p, L, scen: [] };
+  scs.forEach((sc, k) => {
+    progress && progress('Calibrando colchón: ' + sc.name);
+    const c = calibrateSingle(q, g, sc);
+    const r = firstRoutes(q, g, sc, c.z, true);
+    const Ns = Float64Array.from(r.N).sort(), Ts = Float64Array.from(r.T).sort();
+    let sN = 0, sT = 0, sB = 0;
+    for (let i = 0; i < q.R; i++) { sN += r.N[i]; sT += r.T[i]; sB += r.B[i]; }
+    const cnt = new Map(); for (const n of r.N) cnt.set(n, (cnt.get(n) || 0) + 1);
+    out.scen.push({ name: sc.name, z: c.z, capped: c.capped, trunc: r.trunc,
+      meanN: sN / q.R, p5N: quantileSorted(Ns, 0.05), p50N: quantileSorted(Ns, 0.5), p95N: quantileSorted(Ns, 0.95),
+      meanT: sT / q.R, pAlphaT: quantileSorted(Ts, p.alpha), compliance: 1 - r.viol / q.R,
+      slack: p.Tmax - sT / q.R, meanBuf: sB / q.R, per1000: 1000 / (sN / q.R), cnt: Array.from(cnt.entries()),
+      Tsample: Array.from(r.T.slice(0, Math.min(q.R, 6000))) });
+  });
+  // Histograma de paradas
+  const lo = Math.max(1, Math.floor(Math.min(...out.scen.map((s) => s.p5N))) - 3);
+  const hi = Math.ceil(Math.max(...out.scen.map((s) => s.p95N))) + 3;
+  out.histN = [];
+  for (let v = lo; v <= hi; v++) {
+    const row = { x: v };
+    out.scen.forEach((s, k) => { const m = new Map(s.cnt); row['s' + k] = (m.get(v) || 0) / q.R; });
+    out.histN.push(row);
+  }
+  // Histograma de T (bins compartidos)
+  const all = []; out.scen.forEach((s) => all.push(...s.Tsample)); all.sort((a, b) => a - b);
+  let tlo = Math.min(quantileSorted(all, 0.003), p.Tmax), thi = Math.max(quantileSorted(all, 0.997), p.Tmax);
+  const pad = (thi - tlo) * 0.04; tlo -= pad; thi += pad;
+  const bins = 40, w = (thi - tlo) / bins;
+  out.histT = [];
+  for (let b = 0; b < bins; b++) out.histT.push({ x: tlo + (b + 0.5) * w, s0: 0, s1: 0, s2: 0 });
+  out.scen.forEach((s, k) => { for (const t of s.Tsample) { if (t < tlo || t > thi) continue; let b = Math.floor((t - tlo) / w); if (b >= bins) b = bins - 1; out.histT[b]['s' + k] += 1 / s.Tsample.length; } });
+  out.scen.forEach((s) => { delete s.cnt; delete s.Tsample; });
+  progress && progress('Armando la ruta de muestra');
+  out.show = showcase(p, out.scen.map((s) => s.z), p.routeSeed, L);
+  out.elapsedMs = Date.now() - t0;
+  return out;
+}
+
+const DEFAULTS_SINGLE = { Tmax: 600, alpha: 0.95, stem1: 30, stem2: 30, d: 10, comida: 45, tFijo: 4, tVar: 0.3, muQ: 20, sdQ: 30, muW: 5, sdW: 10, knownBoxes: true, r2Q: 0.7, r2W: 0.5, reps: 4000, seed: 42, routeSeed: 19 };
+
+if (typeof module !== 'undefined') module.exports = { simulateSingle, DEFAULTS_SINGLE };
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/recharts@2.12.7/umd/Recharts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+(function () {
+const { useState, useEffect, useRef, useMemo, useCallback } = React;
+const html = htm.bind(React.createElement);
+const R = Recharts;
+const ENGINE = document.getElementById('engine-src').textContent;
+
+/* ---------- Formato ---------- */
+const nf = (d) => new Intl.NumberFormat('es-MX', { minimumFractionDigits: d, maximumFractionDigits: d });
+const f0 = nf(0), f1 = nf(1), f2 = nf(2), f3 = nf(3);
+const pct = (x, d = 1) => nf(d).format(x * 100) + '%';
+const signed = (x, fmt = f0) => (x > 0 ? '−' : x < 0 ? '+' : '') + fmt.format(Math.abs(x));
+
+function decimals(step) { const s = String(step); return s.includes('.') ? s.split('.')[1].length : 0; }
+
+function Control({ def, value, onCommit, disabled }) {
+  const scale = def.scale || 1;
+  const shown = +(value * scale).toFixed(6);
+  const [draft, setDraft] = useState(String(shown));
+  useEffect(() => setDraft(String(shown)), [shown]);
+  const commit = (raw) => {
+    let v = parseFloat(String(raw).replace(',', '.'));
+    if (!isFinite(v)) { setDraft(String(shown)); return; }
+    v = Math.min(def.max, Math.max(def.min, v));
+    v = Math.round(v / def.step) * def.step;
+    v = +v.toFixed(decimals(def.step));
+    setDraft(String(v));
+    if (v !== shown) onCommit(def.k, v / scale);
+  };
+  const id = 'ctl-' + def.k;
+  return html`<div class=${'ctl flex flex-col gap-1' + (disabled ? ' disabled' : '')}>
+    <div class="flex items-baseline justify-between gap-2">
+      <label for=${id}>${def.label} ${def.sym && html`<span class="sym">${def.sym}</span>`}</label>
+      <span class="flex items-center gap-1 flex-none">
+        <input id=${id} type="number" min=${def.min} max=${def.max} step=${def.step} value=${draft} disabled=${disabled}
+          onChange=${(e) => setDraft(e.target.value)} onBlur=${(e) => commit(e.target.value)}
+          onKeyDown=${(e) => { if (e.key === 'Enter') commit(e.target.value); }} />
+        ${def.unit && html`<span class="muted" style=${{ fontSize: '11.5px', minWidth: '44px' }}>${def.unit}</span>`}
+      </span>
+    </div>
+    ${!def.numberOnly && html`<input id=${id + '-r'} type="range" aria-label=${def.label} min=${def.min} max=${def.max} step=${def.step} value=${isFinite(parseFloat(draft)) ? draft : shown} disabled=${disabled}
+      onChange=${(e) => setDraft(e.target.value)}
+      onPointerUp=${(e) => commit(e.target.value)} onKeyUp=${(e) => commit(e.target.value)} onTouchEnd=${(e) => commit(e.target.value)} />`}
+    ${def.hint && disabled && html`<span class="muted" style=${{ fontSize: '11.5px' }}>${def.hint}</span>`}
+  </div>`;
+}
+
+/* ---------- Tema para gráficas ---------- */
+function useTokens() {
+  const read = () => {
+    const cs = getComputedStyle(document.documentElement);
+    const g = (n) => cs.getPropertyValue(n).trim();
+    return { s: [g('--s0'), g('--s1'), g('--s2')], save: g('--save'), saveSoft: g('--save-soft'), tmax: g('--tmax'), line: g('--line'), muted: g('--muted'), ink: g('--ink'),
+      unseen: g('--unseen'), stay: g('--stay'), fixed: g('--fixed'), travel: g('--travel'), meal: g('--meal'), slack: g('--slack'), surface: g('--surface') };
+  };
+  const [t, setT] = useState(read);
+  useEffect(() => {
+    const mq = matchMedia('(prefers-color-scheme: dark)');
+    const up = () => setT(read());
+    mq.addEventListener('change', up);
+    const mo = new MutationObserver(up); mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => { mq.removeEventListener('change', up); mo.disconnect(); };
+  }, []);
+  return t;
+}
+
+/* ---------- Piezas de interfaz ---------- */
+const SNAMES = ['Promedio histórico', 'Fórmula operativa', 'ML'];
+const SHORT = ['Promedio', 'Fórmula', 'ML'];
+
+function Legend3({ tk, extra }) {
+  return html`<div class="legend">
+    ${SNAMES.map((n, k) => html`<span key=${k}><span class="swatch" style=${{ background: tk.s[k] }}></span>${n}</span>`)}
+    ${extra}
+  </div>`;
+}
+
+function Card({ title, sub, children, className }) {
+  return html`<section class=${'panel p-4 md:p-5 flex flex-col gap-3 minw0 ' + (className || '')}>
+    <header class="flex flex-col gap-1"><h2 style=${{ fontSize: '17px', fontWeight: 600 }}>${title}</h2>
+    ${sub && html`<p class="muted" style=${{ fontSize: '13px', maxWidth: '72ch' }}>${sub}</p>`}</header>
+    ${children}
+  </section>`;
+}
+
+const axisProps = (tk) => ({ stroke: tk.line, tick: { fill: tk.muted, fontSize: 11.5 }, tickLine: { stroke: tk.line } });
+const tipStyle = (tk) => ({ contentStyle: { background: tk.surface, border: '1px solid ' + tk.line, borderRadius: 4, fontSize: 12 }, labelStyle: { color: tk.ink }, itemStyle: { color: tk.ink } });
+
+function StepHist({ data, tk, xLabel, refLines, xFmt, height = 260, yLabel }) {
+  const ax = axisProps(tk);
+  return html`<div style=${{ height }}><${R.ResponsiveContainer} width="100%" height="100%">
+    <${R.ComposedChart} data=${data} margin=${{ top: 8, right: 12, bottom: 28, left: 4 }}>
+      <${R.CartesianGrid} stroke=${tk.line} strokeOpacity=${0.6} vertical=${false} />
+      <${R.XAxis} type="number" dataKey="x" domain=${['dataMin', 'dataMax']} ...${ax} tickFormatter=${xFmt || ((v) => f0.format(v))} label=${{ value: xLabel, position: 'bottom', offset: 10, fill: tk.muted, fontSize: 12 }} />
+      <${R.YAxis} ...${ax} width=${56} tickFormatter=${(v) => nf(0).format(v * 100) + '%'} label=${yLabel ? { value: yLabel, angle: -90, position: 'insideLeft', offset: 2, fill: tk.muted, fontSize: 12 } : undefined} />
+      <${R.Tooltip} ...${tipStyle(tk)} labelFormatter=${(v) => (xFmt || f1.format)(v)} formatter=${(v, n) => [pct(v, 2), n]} />
+      ${[0, 1, 2].map((k) => html`<${R.Area} key=${k} type="step" dataKey=${'s' + k} name=${SNAMES[k]} stroke=${tk.s[k]} strokeWidth=${1.6} fill=${tk.s[k]} fillOpacity=${0.12} isAnimationActive=${false} dot=${false} />`)}
+      ${refLines}
+    </${R.ComposedChart}>
+  </${R.ResponsiveContainer}></div>`;
+}
+
+function useWidth(ref) {
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    if (!ref.current) return;
+    const ro = new ResizeObserver((e) => setW(Math.round(e[0].contentRect.width)));
+    ro.observe(ref.current); return () => ro.disconnect();
+  }, []);
+  return w;
+}
+
+/* ---------- Parámetros ---------- */
+const DEFAULTS = { Tmax: 600, alpha: 0.95, stem1: 30, stem2: 30, d: 10, comida: 45, tFijo: 4, tVar: 0.3, muQ: 20, sdQ: 30, muW: 5, sdW: 10, knownBoxes: true, r2Q: 0.7, r2W: 0.5, reps: 4000, seed: 42, routeSeed: 19 };
+const SECTIONS = [
+  { title: 'Jornada y servicio', items: [
+    { k: 'Tmax', label: 'Límite de jornada', sym: 'T_max', unit: 'min', min: 300, max: 720, step: 5 },
+    { k: 'alpha', label: 'Nivel de servicio', sym: 'α', unit: '%', min: 80, max: 99.5, step: 0.5, scale: 100 } ] },
+  { title: 'Tiempos fijos de la ruta', items: [
+    { k: 'stem1', label: 'STEM Time₁ (UO → primer cliente)', sym: 'STEM₁', unit: 'min', min: 0, max: 120, step: 1 },
+    { k: 'stem2', label: 'STEM Time₂ (último cliente → UO)', sym: 'STEM₂', unit: 'min', min: 0, max: 120, step: 1 },
+    { k: 'd', label: 'Traslado entre clientes', sym: 'd', unit: 'min', min: 0, max: 30, step: 0.5 },
+    { k: 'comida', label: 'Comida', sym: 'C', unit: 'min', min: 0, max: 90, step: 1 } ] },
+  { title: 'Stay time', items: [
+    { k: 'tFijo', label: 'Tiempo fijo por cliente', sym: 't_fijo', unit: 'min', min: 0, max: 30, step: 0.5 },
+    { k: 'tVar', label: 'Tiempo variable por caja', sym: 't_var', unit: 'min/caja', min: 0, max: 2, step: 0.05 },
+    { k: 'muQ', label: 'Cajas: media', sym: 'μ_Q', unit: 'cajas', min: 1, max: 200, step: 1 },
+    { k: 'sdQ', label: 'Cajas: desviación estándar', sym: 'σ_Q', unit: 'cajas', min: 1, max: 300, step: 1 },
+    { k: 'muW', label: 'Residual: media', sym: 'μ_W', unit: 'min', min: 0.5, max: 60, step: 0.5 },
+    { k: 'sdW', label: 'Residual: desviación estándar', sym: 'σ_W', unit: 'min', min: 0.5, max: 60, step: 0.5 } ], derived: true },
+  { title: 'Información y modelo', items: [
+    { k: 'knownBoxes', label: 'Cajas conocidas al rutear (preventa)', toggle: true },
+    { k: 'r2Q', label: 'R² latente del modelo sobre cajas', sym: 'R²_Q', unit: '', min: 0, max: 0.99, step: 0.01, disabledIf: (p) => p.knownBoxes, hint: 'Sólo aplica si las cajas no son conocidas.' },
+    { k: 'r2W', label: 'R² latente del modelo sobre el residual', sym: 'R²_W', unit: '', min: 0, max: 0.99, step: 0.01 } ] },
+  { title: 'Simulación', items: [
+    { k: 'reps', label: 'Réplicas para calibrar', sym: 'M', unit: 'rutas', min: 500, max: 20000, step: 500 },
+    { k: 'seed', label: 'Semilla de réplicas', sym: 's', unit: '', numberOnly: true, min: 0, max: 2147483647, step: 1 },
+    { k: 'routeSeed', label: 'Ruta de muestra', sym: '#', unit: '', numberOnly: true, min: 0, max: 2147483647, step: 1, newRoute: true } ] },
+];
+
+function Controls({ p, set, reset }) {
+  const muS = p.tFijo + p.tVar * p.muQ + p.muW;
+  const sdS = Math.sqrt(p.tVar * p.tVar * p.sdQ * p.sdQ + p.sdW * p.sdW);
+  return html`<div class="flex flex-col gap-5">
+    ${SECTIONS.map((sec) => html`<section key=${sec.title} class="flex flex-col gap-3">
+      <h3 class="eyebrow">${sec.title}</h3>
+      ${sec.items.map((def) => def.toggle
+        ? html`<div key=${def.k} class="flex items-center justify-between gap-3">
+            <span id="lbl-known" style=${{ fontSize: '13px' }}>${def.label}</span>
+            <span class="flex items-center gap-2"><span class="muted mono" style=${{ fontSize: '12px' }}>${p[def.k] ? 'Sí' : 'No'}</span>
+            <button id="ctl-known" class="switch" role="switch" aria-labelledby="lbl-known" aria-checked=${p[def.k] ? 'true' : 'false'} onClick=${() => set(def.k, !p[def.k])}></button></span>
+          </div>`
+        : html`<div key=${def.k} class="flex flex-col gap-2"><${Control} def=${def} value=${p[def.k]} onCommit=${set} disabled=${def.disabledIf ? def.disabledIf(p) : false} />
+            ${def.newRoute && html`<button class="btn" onClick=${() => set('routeSeed', Math.floor(Math.random() * 1e6))}>Sortear otra ruta</button>`}</div>`)}
+      ${sec.derived && html`<div class="flex justify-between gap-2 panel px-3 py-2" style=${{ background: 'var(--surface-2)', fontSize: '12.5px' }}>
+        <span>Stay time medio <span class="mono muted">μ_S</span> <b class="num">${f1.format(muS)} min</b></span>
+        <span>Desv. <span class="mono muted">σ_S</span> <b class="num">${f1.format(sdS)} min</b></span>
+      </div>`}
+    </section>`)}
+    <button class="btn" onClick=${reset}>Restablecer valores por defecto</button>
+  </div>`;
+}
+
+/* ---------- Simulación ---------- */
+const WORKER_SRC = ENGINE + `
+self.onmessage = (ev) => {
+  const { id, p } = ev.data;
+  try { const res = simulateSingle(p, (msg) => self.postMessage({ id, type: 'progress', msg })); self.postMessage({ id, type: 'result', res }); }
+  catch (err) { self.postMessage({ id, type: 'error', msg: String(err && err.message || err) }); }
+};`;
+
+function useSimulation(p) {
+  const [state, setState] = useState({ res: null, busy: true, msg: 'Iniciando', err: null });
+  const workerRef = useRef(null), busyRef = useRef(false), jobRef = useRef(0), fallback = useRef(null);
+  const url = useMemo(() => { try { return URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' })); } catch (e) { return null; } }, []);
+  const handle = (data) => {
+    if (data.id !== jobRef.current) return;
+    if (data.type === 'progress') setState((s) => ({ ...s, msg: data.msg }));
+    else if (data.type === 'result') { busyRef.current = false; setState((s) => ({ ...s, res: data.res, busy: false, msg: '' })); }
+    else if (data.type === 'error') { busyRef.current = false; setState((s) => ({ ...s, busy: false, err: data.msg })); }
+  };
+  const makeWorker = () => { if (!url) return null; try { const w = new Worker(url); w.onmessage = (e) => handle(e.data); w.onerror = () => { w.terminate(); workerRef.current = null; }; return w; } catch (e) { return null; } };
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const id = ++jobRef.current;
+      setState((s) => ({ ...s, busy: true, msg: 'Generando réplicas', err: null }));
+      if (busyRef.current && workerRef.current) { workerRef.current.terminate(); workerRef.current = null; }
+      if (!workerRef.current) workerRef.current = makeWorker();
+      busyRef.current = true;
+      if (workerRef.current) { workerRef.current.postMessage({ id, p }); return; }
+      if (!fallback.current) fallback.current = new Function(ENGINE + '; return { simulateSingle };')();
+      setTimeout(() => { try { handle({ id, type: 'result', res: fallback.current.simulateSingle(p) }); } catch (e) { handle({ id, type: 'error', msg: String(e.message || e) }); } }, 30);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [p]);
+  return state;
+}
+
+/* ---------- Vistas de la ruta ---------- */
+function RouteCard({ res, k, tk, p }) {
+  const r = res.show.routes[k], s = res.scen[k];
+  const bad = r.Treal > p.Tmax;
+  return html`<div class="panel scard p-4 flex flex-col gap-3 minw0" style=${{ '--sc': tk.s[k] }}>
+    <div class="flex items-center justify-between gap-2"><span class="eyebrow" style=${{ color: tk.s[k] }}>${k + 1} · ${SNAMES[k]}</span>
+      <span class="mono muted" style=${{ fontSize: '11.5px' }}>z = ${f3.format(s.z)}</span></div>
+    <div class="flex items-baseline gap-2"><span class="big num">${r.n}</span><span class="muted">paradas en esta ruta</span></div>
+    <div class="grid grid-cols-3 gap-2 num" style=${{ fontSize: '12.5px' }}>
+      <div><div class="muted">Plan</div><b>${f0.format(r.Tplan)}</b> min</div>
+      <div><div class="muted">Colchón</div><b>${f0.format(r.buf)}</b> min</div>
+      <div><div class="muted">Real</div><b class=${bad ? 'c-tmax' : ''}>${f0.format(r.Treal)}</b> min</div>
+    </div>
+    <div class="muted" style=${{ fontSize: '12px' }}>${bad ? 'Rebasa T_max por ' + f0.format(r.Treal - p.Tmax) + ' min.' : 'Termina ' + f0.format(p.Tmax - r.Treal) + ' min antes de T_max.'}</div>
+  </div>`;
+}
+
+function Trajectory({ res, tk, p }) {
+  const sh = res.show;
+  const kMax = Math.min(sh.traj.length, Math.max(...sh.N) + 4);
+  const data = sh.traj.slice(0, kMax);
+  const ax = axisProps(tk);
+  const yMin = Math.floor(Math.min(...data.map((d) => d.real)) / 100) * 100;
+  const yMax = Math.ceil(Math.max(p.Tmax * 1.05, ...data.map((d) => Math.max(d.c0, d.c1, d.c2, d.real))) / 100) * 100;
+  return html`<div class="flex flex-col gap-2 minw0">
+    <div style=${{ height: 340 }}><${R.ResponsiveContainer} width="100%" height="100%">
+      <${R.ComposedChart} data=${data} margin=${{ top: 16, right: 16, bottom: 28, left: 4 }}>
+        <${R.CartesianGrid} stroke=${tk.line} strokeOpacity=${0.6} />
+        <${R.XAxis} dataKey="k" type="number" domain=${[1, kMax]} ticks=${data.map((d) => d.k)} interval=${0} ...${ax} label=${{ value: 'Paradas asignadas a la ruta', position: 'bottom', offset: 10, fill: tk.muted, fontSize: 12 }} />
+        <${R.YAxis} domain=${[yMin, yMax]} ticks=${Array.from({ length: Math.floor((yMax - yMin) / 100) + 1 }, (_, i) => yMin + i * 100)} ...${ax} width=${52} label=${{ value: 'min', angle: -90, position: 'insideLeft', offset: 8, fill: tk.muted, fontSize: 12 }} />
+        <${R.Tooltip} ...${tipStyle(tk)} labelFormatter=${(v) => v + ' paradas'} formatter=${(v, n) => [f0.format(v) + ' min', n]} />
+        <${R.ReferenceLine} y=${p.Tmax} stroke=${tk.tmax} strokeWidth=${2} label=${{ value: 'T_max', position: 'insideTopLeft', fill: tk.tmax, fontSize: 11.5 }} />
+        ${[0, 1, 2].map((e) => html`<${R.ReferenceLine} key=${'n' + e} x=${sh.N[e]} stroke=${tk.s[e]} strokeDasharray="4 4" />`)}
+        ${[0, 1, 2].map((e) => html`<${R.Line} key=${e} type="linear" dataKey=${'c' + e} name=${'Plan + colchón · ' + SHORT[e]} stroke=${tk.s[e]} strokeWidth=${2} dot=${{ r: 2.5, fill: tk.s[e], strokeWidth: 0 }} isAnimationActive=${false} />`)}
+        <${R.Line} type="linear" dataKey="real" name="Tiempo real" stroke=${tk.ink} strokeWidth=${2.4} strokeDasharray="1 0" dot=${{ r: 3, fill: tk.ink, strokeWidth: 0 }} isAnimationActive=${false} />
+      </${R.ComposedChart}>
+    </${R.ResponsiveContainer}></div>
+    <div class="legend">
+      ${[0, 1, 2].map((e) => html`<span key=${e}><span class="swatch" style=${{ background: tk.s[e] }}></span>Plan + colchón, ${SHORT[e]} (corta en ${sh.N[e]})</span>`)}
+      <span><span class="swatch" style=${{ background: tk.ink }}></span>Tiempo real si la ruta cerrara en k paradas</span>
+    </div>
+  </div>`;
+}
+
+function PerStop({ res, tk, p }) {
+  const sh = res.show;
+  const n = Math.max(...sh.N);
+  const data = sh.cust.slice(0, n).map((c, i) => ({ k: i + 1, h0: c.h[0], h1: c.h[1], h2: c.h[2], s: c.S }));
+  const ax = axisProps(tk);
+  return html`<div class="flex flex-col gap-2 minw0">
+    <div style=${{ height: 280 }}><${R.ResponsiveContainer} width="100%" height="100%">
+      <${R.ComposedChart} data=${data} margin=${{ top: 8, right: 12, bottom: 28, left: 4 }} barGap=${0} barCategoryGap="22%">
+        <${R.CartesianGrid} stroke=${tk.line} strokeOpacity=${0.6} vertical=${false} />
+        <${R.XAxis} dataKey="k" ...${ax} interval=${0} label=${{ value: 'Parada', position: 'bottom', offset: 10, fill: tk.muted, fontSize: 12 }} />
+        <${R.YAxis} ...${ax} width=${44} label=${{ value: 'min', angle: -90, position: 'insideLeft', offset: 8, fill: tk.muted, fontSize: 12 }} />
+        <${R.Tooltip} ...${tipStyle(tk)} labelFormatter=${(v) => 'Parada ' + v} formatter=${(v, n) => [f1.format(v) + ' min', n]} cursor=${{ fill: tk.unseen, fillOpacity: 0.4 }} />
+        ${[0, 1, 2].map((e) => html`<${R.Bar} key=${e} dataKey=${'h' + e} name=${'Ŝ ' + SHORT[e]} fill=${tk.s[e]} fillOpacity=${0.85} isAnimationActive=${false} />`)}
+        <${R.Line} dataKey="s" name="S real" stroke="none" dot=${{ r: 4.5, fill: tk.ink, stroke: tk.surface, strokeWidth: 1.5 }} activeDot=${{ r: 5 }} isAnimationActive=${false} legendType="circle" />
+      </${R.ComposedChart}>
+    </${R.ResponsiveContainer}></div>
+    <div class="legend">${[0, 1, 2].map((e) => html`<span key=${e}><span class="swatch" style=${{ background: tk.s[e] }}></span>Ŝ ${SNAMES[e]}</span>`)}
+      <span><span class="swatch" style=${{ background: tk.ink, borderRadius: '50%' }}></span>S real</span></div>
+  </div>`;
+}
+
+function Jornada({ res, tk, p }) {
+  const ref = useRef(null);
+  const W = useWidth(ref);
+  const sh = res.show;
+  const rows = [];
+  sh.routes.forEach((r, e) => {
+    const cs = sh.cust.slice(0, r.n);
+    rows.push({ e, kind: 'plan', stays: cs.map((c) => c.h[e]), buf: r.buf, T: r.Tplan + r.buf });
+    rows.push({ e, kind: 'real', stays: cs.map((c) => c.S), T: r.Treal });
+  });
+  const lay = (stays) => {
+    const n = stays.length, la = Math.max(0, Math.ceil(n / 2) - 1);
+    const st = []; let t = p.stem1, lunch = 0;
+    for (let i = 0; i < n; i++) { st.push(t); t += stays[i]; if (i === la) { lunch = t; t += p.comida; } if (i < n - 1) t += p.d; }
+    return { st, lunch, end: t + p.stem2 };
+  };
+  const xMax = Math.max(p.Tmax, ...rows.map((r) => r.T)) * 1.03;
+  const narrow = W < 560;
+  const gutL = narrow ? 76 : 150, gutR = 40, rowH = 22, groupGap = 14, top = 22;
+  const iw = Math.max(40, W - gutL - gutR);
+  const x = (t) => gutL + (t / xMax) * iw;
+  const H = top + rows.length * rowH + 2 * groupGap + 26;
+  const yOf = (i) => top + i * rowH + Math.floor(i / 2) * groupGap + rowH / 2;
+  const ticks = []; for (let t = 0; t <= xMax; t += 60) ticks.push(t);
+  return html`<div class="flex flex-col gap-3 minw0">
+    <div ref=${ref} style=${{ width: '100%' }}>${W > 0 && html`<svg width=${W} height=${H} role="img" aria-label="Plan y realidad de la ruta en los tres escenarios">
+      <defs><pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill=${tk.surface} /><line x1="0" y1="0" x2="0" y2="5" stroke=${tk.muted} strokeWidth="1.6" /></pattern></defs>
+      ${ticks.map((t) => html`<g key=${t}><line x1=${x(t)} x2=${x(t)} y1=${top - 6} y2=${H - 22} stroke=${tk.line} /><text x=${x(t)} y=${H - 8} textAnchor="middle" fontSize="11" fill=${tk.muted}>${f0.format(t)}</text></g>`)}
+      ${rows.map((r, i) => {
+        const y = yOf(i), L = lay(r.stays), plan = r.kind === 'plan';
+        const col = tk.s[r.e];
+        return html`<g key=${i}>
+          <text x=${gutL - 8} y=${y + 4} textAnchor="end" fontSize="11.5" fill=${plan ? col : tk.ink} fontWeight=${plan ? 600 : 400}>${narrow ? (plan ? SHORT[r.e] : 'real') : (plan ? SHORT[r.e] + ' · plan' : 'real · ' + r.stays.length + ' paradas')}</text>
+          <line x1=${x(0)} x2=${x(L.end)} y1=${y} y2=${y} stroke=${tk.travel} strokeWidth="1" />
+          <rect x=${x(0)} y=${y - 2} width=${x(p.stem1) - x(0)} height="4" fill=${tk.fixed} />
+          <rect x=${x(L.end - p.stem2)} y=${y - 2} width=${x(L.end) - x(L.end - p.stem2)} height="4" fill=${tk.fixed} />
+          <rect x=${x(L.lunch)} y=${y - 5} width=${Math.max(1, x(L.lunch + p.comida) - x(L.lunch))} height="10" fill=${tk.meal} stroke=${tk.travel} strokeWidth="0.5" />
+          ${r.stays.map((s, j) => html`<rect key=${j} x=${x(L.st[j])} y=${y - 6} width=${Math.max(1.2, x(L.st[j] + s) - x(L.st[j]))} height="12" rx="1" fill=${plan ? 'none' : col} stroke=${col} strokeWidth=${plan ? 1.2 : 0} />`)}
+          ${plan && html`<rect x=${x(L.end)} y=${y - 6} width=${Math.max(0, x(L.end + r.buf) - x(L.end))} height="12" fill="url(#hatch)" stroke=${tk.muted} strokeWidth="0.6" />`}
+          <text x=${x(r.T) + 5} y=${y + 4} fontSize="11" fill=${!plan && r.T > p.Tmax ? tk.tmax : tk.muted} style=${{ fontVariantNumeric: 'tabular-nums' }}>${f0.format(r.T)}</text>
+        </g>`;
+      })}
+      <line x1=${x(p.Tmax)} x2=${x(p.Tmax)} y1=${top - 12} y2=${H - 22} stroke=${tk.tmax} strokeWidth="2" />
+      <text x=${x(p.Tmax)} y=${top - 14} textAnchor="middle" fontSize="11" fill=${tk.tmax}>T_max ${f0.format(p.Tmax)}</text>
+    </svg>`}</div>
+    <div class="legend">
+      <span><span class="swatch" style=${{ border: '1.2px solid ' + tk.muted }}></span>Ŝ planeado por parada</span>
+      <span><span class="swatch" style=${{ background: tk.s[2] }}></span>S real por parada</span>
+      <span><span class="swatch" style=${{ background: 'repeating-linear-gradient(45deg,' + tk.muted + ' 0 1.5px,' + tk.surface + ' 1.5px 4px)', outline: '1px solid ' + tk.muted }}></span>Colchón z·√Σv</span>
+      <span><span class="swatch" style=${{ background: tk.fixed }}></span>STEM₁ / STEM₂</span>
+      <span><span class="swatch" style=${{ background: tk.meal, outline: '1px solid ' + tk.travel }}></span>Comida</span>
+      <span>— traslados</span>
+    </div>
+  </div>`;
+}
+
+function StopTable({ res, tk, p }) {
+  const sh = res.show;
+  const n = Math.min(sh.cust.length, Math.max(...sh.N) + 2);
+  const known = p.knownBoxes;
+  return html`<div style=${{ overflowX: 'auto' }}><table class="kpi num">
+    <thead><tr>
+      <th>Parada</th><th>Cajas Q</th>${!known && html`<th>Q̂ (ML)</th>`}<th>Residual W</th><th>Ŵ (ML)</th><th>S real</th>
+      ${SHORT.map((n2, e) => html`<th key=${e} style=${{ color: tk.s[e] }}>Ŝ ${n2}</th>`)}
+      <th>Entra en</th>
+    </tr></thead>
+    <tbody>${sh.cust.slice(0, n).map((c, i) => html`<tr key=${i} style=${{ opacity: i + 1 > Math.max(...sh.N) ? 0.5 : 1 }}>
+      <td>${i + 1}</td><td>${f1.format(c.Q)}</td>${!known && html`<td>${f1.format(c.Qhat)}</td>`}<td>${f1.format(c.W)}</td><td>${f1.format(c.What)}</td>
+      <td><b>${f1.format(c.S)}</b></td>
+      ${c.h.map((h, e) => html`<td key=${e}>${f1.format(h)} <span class="muted" style=${{ fontSize: '11px' }}>(${(c.S - h >= 0 ? '+' : '−') + f1.format(Math.abs(c.S - h))})</span></td>`)}
+      <td>${[0, 1, 2].map((e) => html`<span key=${e} class="swatch" title=${SNAMES[e]} style=${{ background: i < sh.N[e] ? tk.s[e] : 'transparent', outline: '1px solid ' + tk.s[e], marginRight: '4px' }}></span>`)}</td>
+    </tr>`)}</tbody>
+  </table>
+  <p class="muted mt-2" style=${{ fontSize: '12px' }}>Entre paréntesis, el error e = S − Ŝ. Las filas atenuadas son clientes que ningún escenario alcanzó a meter en esta ruta.</p></div>`;
+}
+
+function RepTable({ res, tk, p }) {
+  const rows = [
+    ['Paradas por ruta: media', (s) => f2.format(s.meanN)],
+    ['Paradas por ruta: P5 – P50 – P95', (s) => f0.format(s.p5N) + ' – ' + f0.format(s.p50N) + ' – ' + f0.format(s.p95N)],
+    ['Vehículos por cada 1,000 clientes', (s) => f1.format(s.per1000)],
+    ['Cumplimiento observado (T ≤ T_max)', (s) => pct(s.compliance, 2)],
+    ['z calibrado', (s) => f3.format(s.z) + (s.capped ? ' (tope)' : '')],
+    ['Colchón medio z·√Σv', (s) => f1.format(s.meanBuf) + ' min'],
+    ['Tiempo de mercado medio', (s) => f1.format(s.meanT) + ' min'],
+    ['Holgura media', (s) => f1.format(s.slack) + ' min'],
+  ];
+  return html`<div style=${{ overflowX: 'auto' }}><table class="kpi num">
+    <thead><tr><th>Indicador (sobre ${f0.format(p.reps)} rutas)</th>${SNAMES.map((n, k) => html`<th key=${k} style=${{ color: tk.s[k] }}>${n}</th>`)}</tr></thead>
+    <tbody>${rows.map(([l, fn]) => html`<tr key=${l}><td style=${{ fontFamily: 'var(--f-body)' }}>${l}</td>${res.scen.map((s, k) => html`<td key=${k}>${fn(s)}</td>`)}</tr>`)}</tbody>
+  </table></div>`;
+}
+
+function NHist({ res, tk }) {
+  const ax = axisProps(tk);
+  return html`<div style=${{ height: 240 }}><${R.ResponsiveContainer} width="100%" height="100%">
+    <${R.BarChart} data=${res.histN} margin=${{ top: 8, right: 12, bottom: 28, left: 4 }} barGap=${0} barCategoryGap="18%">
+      <${R.CartesianGrid} stroke=${tk.line} strokeOpacity=${0.6} vertical=${false} />
+      <${R.XAxis} dataKey="x" ...${ax} label=${{ value: 'Paradas por ruta', position: 'bottom', offset: 10, fill: tk.muted, fontSize: 12 }} />
+      <${R.YAxis} ...${ax} width=${56} tickFormatter=${(v) => f0.format(v * 100) + '%'} label=${{ value: '% de rutas', angle: -90, position: 'insideLeft', offset: 2, fill: tk.muted, fontSize: 12 }} />
+      <${R.Tooltip} ...${tipStyle(tk)} labelFormatter=${(v) => v + ' paradas'} formatter=${(v, n) => [pct(v, 1), n]} cursor=${{ fill: tk.unseen, fillOpacity: 0.4 }} />
+      ${[0, 1, 2].map((k) => html`<${R.Bar} key=${k} dataKey=${'s' + k} name=${SNAMES[k]} fill=${tk.s[k]} isAnimationActive=${false} />`)}
+    </${R.BarChart}>
+  </${R.ResponsiveContainer}></div>`;
+}
+
+/* ---------- App ---------- */
+function App() {
+  const [p, setP] = useState(DEFAULTS);
+  const set = useCallback((k, v) => setP((q) => ({ ...q, [k]: v })), []);
+  const reset = useCallback(() => setP({ ...DEFAULTS }), []);
+  const sim = useSimulation(p);
+  const tk = useTokens();
+  const res = sim.res;
+  return html`<div class="wrap flex flex-col gap-5">
+    <header class="flex flex-col gap-3">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div class="flex flex-col gap-1">
+          <span class="eyebrow">Investigación de operaciones · una ruta, tres formas de planearla</span>
+          <h1 style=${{ fontSize: 'clamp(24px, 3.2vw, 34px)', fontWeight: 700, lineHeight: 1.1 }}>Simulador de una ruta</h1>
+        </div>
+        <span class="busy" aria-live="polite">${sim.busy ? html`<span class="dot"></span>Calculando: ${sim.msg}…` : res ? html`Listo en ${f1.format(res.elapsedMs / 1000)} s · ${f0.format(res.params.reps)} rutas simuladas` : ''}</span>
+      </div>
+      <div class="panel px-4 py-3 flex flex-col gap-1">
+        <div class="formula">T = STEM₁ + <span class="hl-stay">Σᵢ Stay Time Sᵢ</span> + (N − 1)·d + C + STEM₂ ≤ <span class="c-tmax">T_max</span></div>
+        <div class="formula muted">Sᵢ = t_fijo + t_var·Qᵢ + Wᵢ    se agrega el cliente k si STEM₁ + Σ Ŝᵢ + (k − 1)·d + C + STEM₂ + z·√Σvᵢ ≤ T_max</div>
+      </div>
+      <p class="muted" style=${{ maxWidth: '86ch' }}>Un vehículo sale de la UO y recibe clientes en orden mientras el plan, con su colchón, quepa en la jornada. Los tres escenarios ven exactamente los mismos clientes; sólo cambia cuánto saben de cada uno al planear. El colchón z de cada escenario se calibra con miles de rutas simuladas para cumplir el nivel de servicio.</p>
+    </header>
+    <div class="grid gap-5 lg:grid-cols-[340px_minmax(0,1fr)]">
+      <aside class="panel minw0"><div class="scroll p-4 md:p-5"><${Controls} p=${p} set=${set} reset=${reset} /></div></aside>
+      <main class=${'flex flex-col gap-5 minw0 ' + (sim.busy && res ? 'stale' : '')}>
+        ${sim.err && html`<div class="panel p-4 bad">La simulación falló: ${sim.err}. Revisa que las medias y desviaciones sean positivas e intenta de nuevo.</div>`}
+        ${!res ? html`<div class="panel p-6 muted">Simulando ${f0.format(p.reps)} rutas…</div>` : html`<${Results} res=${res} tk=${tk} />`}
+      </main>
+    </div>
+  </div>`;
+}
+
+function Results({ res, tk }) {
+  const p = res.params, sh = res.show;
+  const [a, b, c] = sh.N;
+  const sum = `En esta ruta caben ${a} paradas planeando con el promedio, ${b} con la fórmula operativa y ${c} con ML. ` +
+    `En ${f0.format(p.reps)} rutas simuladas, la media es ${res.scen.map((s) => f1.format(s.meanN)).join(' / ')} paradas, ` +
+    `o ${res.scen.map((s) => f1.format(s.per1000)).join(' / ')} vehículos por cada 1,000 clientes.`;
+  return html`
+    <div class="grid gap-3 md:grid-cols-3">${[0, 1, 2].map((k) => html`<${RouteCard} key=${k} res=${res} k=${k} tk=${tk} p=${p} />`)}</div>
+    <p class="panel px-4 py-3" style=${{ fontSize: '15px', borderLeft: '3px solid ' + tk.save }}>${sum}</p>
+
+    <${Card} title="Cuántas paradas caben" sub="Cada línea de color es el tiempo que el planeador estima si la ruta cerrara con k paradas, incluido el colchón. La ruta deja de recibir clientes cuando su línea cruza T_max. La línea negra es lo que de verdad tardaría.">
+      <${Trajectory} res=${res} tk=${tk} p=${p} />
+    </${Card}>
+
+    <${Card} title="Plan contra realidad" sub="Arriba de cada escenario, la jornada planeada (paradas en contorno y colchón rayado); abajo, la jornada real con los mismos clientes.">
+      <${Jornada} res=${res} tk=${tk} p=${p} />
+    </${Card}>
+
+    <${Card} title="Predicción por parada" sub="Stay time predicho por cada escenario frente al real. El promedio predice lo mismo para todos; la fórmula y el ML siguen a los clientes pesados.">
+      <${PerStop} res=${res} tk=${tk} p=${p} />
+    </${Card}>
+
+    <${Card} title="Detalle de cada parada">
+      <${StopTable} res=${res} tk=${tk} p=${p} />
+    </${Card}>
+
+    <${Card} title=${'Lo que pasa en ' + f0.format(p.reps) + ' rutas como esta'} sub="Cada réplica es una ruta nueva con clientes distintos. Así se calibra el colchón y se ve si la ruta de muestra es típica.">
+      <${RepTable} res=${res} tk=${tk} p=${p} />
+      <div class="grid gap-6 xl:grid-cols-2">
+        <div class="flex flex-col gap-2 minw0"><h3 style=${{ fontSize: '14px', fontWeight: 600 }}>Paradas por ruta</h3><${NHist} res=${res} tk=${tk} /><${Legend3} tk=${tk} /></div>
+        <div class="flex flex-col gap-2 minw0"><h3 style=${{ fontSize: '14px', fontWeight: 600 }}>Tiempo de mercado real</h3>
+          <${StepHist} data=${res.histT} tk=${tk} xLabel="T real (min)" yLabel="% de rutas" height=${240}
+            refLines=${[html`<${R.ReferenceLine} key="t" x=${p.Tmax} stroke=${tk.tmax} strokeWidth=${2} />`, ...res.scen.map((s, k) => html`<${R.ReferenceLine} key=${k} x=${s.pAlphaT} stroke=${tk.s[k]} strokeDasharray="5 4" />`)]} />
+          <${Legend3} tk=${tk} extra=${html`<span>Línea roja: T_max. Punteadas: P${nf(1).format(p.alpha * 100)} de cada escenario.</span>`} /></div>
+      </div>
+    </${Card}>
+  `;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
+})();
+
+</script>
+
+</body></html>

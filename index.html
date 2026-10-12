@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>simuladero</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+:root { --bg: #f4f6f7; --surface: #fff; --ink: #1a1f24; --muted: #5b646d; --line: #dde2e6; --acc: #e5732a; color-scheme: light; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #111417; --surface: #181c20; --ink: #e5e9ec; --muted: #98a2ac; --line: #2a3037; --acc: #f08a45; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #111417; --surface: #181c20; --ink: #e5e9ec; --muted: #98a2ac; --line: #2a3037; --acc: #f08a45; color-scheme: dark; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; }
+.wrap { max-width: 960px; margin: 0 auto; padding: 40px 16px; }
+h1 { font: 700 40px "IBM Plex Sans Condensed", system-ui, sans-serif; margin: 0; }
+h2 { font: 600 20px "IBM Plex Sans Condensed", system-ui, sans-serif; margin: 6px 0; }
+.cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); margin-top: 28px; }
+a.card { display: block; background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--acc); border-radius: 6px; padding: 16px; color: inherit; text-decoration: none; }
+a.card:hover, a.card:focus-visible { border-color: var(--muted); border-top-color: var(--acc); }
+.n { font: 600 12px "IBM Plex Sans Condensed", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+p { margin: 0; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>simuladero</h1>
+  <p>Simulaciones Monte Carlo de fenómenos operativos, para mover parámetros y ver qué pasa.</p>
+  <div class="cards">
+    <a class="card" href="ruta/"><div class="n">Fenómeno 1</div><h2>Ruta: plan vs. real</h2>
+      <p>Por qué un modelo de stay times puede bajar el tiempo de mercado: la resta, los estimadores robustos y la holgura.</p></a>
+    <a class="card" href="flota/"><div class="n">Fenómeno 1 · complemento</div><h2>Flota y calidad de predicción</h2>
+      <p>Cuántos clientes caben por ruta y cuánta flota se ahorra según qué tan bien se predice el stay.</p></a>
+  </div>
+</div>
+</body>
+</html>
