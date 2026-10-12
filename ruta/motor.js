@@ -20,7 +20,12 @@ const PARAMS = [
   ['stay', 'muW', 'Residual W promedio', 8, 0, 60, 0.5, 'min'],
   ['stay', 'cvW', 'Variabilidad de W (CV)', 1, 0, 3, 0.05, ''],
   ['jornada', 'limite', 'Jornada objetivo', 600, 240, 840, 10, 'min'],
+  ['modelo', 'sesgo', 'Sesgo del modelo', 0, -30, 30, 1, '%'],
+  ['modelo', 'ruido', 'Ruido extra por cliente (desv. estándar)', 0, 0, 15, 0.5, 'min'],
 ];
+/* Con qué predice el planificador el stay de cada cliente. Las cajas se conocen antes de salir (preventa). */
+const MODELOS = ['Promedio único', 'Modelo con cajas', 'Perfecto'];
+const DIAS_MES = 26;
 const DEFAULTS = Object.fromEntries(PARAMS.map((r) => [r[1], r[3]]));
 
 /* ---------- Azar ---------- */
@@ -64,8 +69,16 @@ function dia(p, rnd, nrm) {
     stays += S; fijo += p.tFijo; variable += p.tVar * Q; residual += W;
   }
   const traslados = (p.N - 1) * p.d;
-  const T = p.stem1 + stays + traslados + p.C + p.stem2;
-  return { clientes, comidaTras, T, partes: { stem1: p.stem1, traslados, comida: p.C, stem2: p.stem2, fijo, variable, residual } };
+  const fijoRuta = p.stem1 + traslados + p.C + p.stem2;
+  const T = fijoRuta + stays;
+  // Plan: el mismo día, armado con el stay predicho por cada modelo (× (1 + sesgo) + ruido).
+  // Siempre se sortean 3 normales por cliente para que mover los sliders no cambie el día real.
+  const ES = p.tFijo + p.tVar * p.muQ + p.muW, plan = [fijoRuta, fijoRuta, fijoRuta];
+  for (const c of clientes) {
+    const base = [ES, p.tFijo + p.tVar * c.Q + p.muW, c.S];
+    for (let k = 0; k < 3; k++) plan[k] += Math.max(0, base[k] * (1 + p.sesgo / 100) + p.ruido * nrm());
+  }
+  return { clientes, comidaTras, T, plan, partes: { stem1: p.stem1, traslados, comida: p.C, stem2: p.stem2, fijo, variable, residual } };
 }
 
 /* ---------- Teoría ----------
@@ -75,7 +88,10 @@ function teoria(p) {
   const varCajas = p.N * (p.tVar * p.muQ * p.cvQ) ** 2;
   const varW = p.N * (p.muW * p.cvW) ** 2;
   const fijo = p.stem1 + (p.N - 1) * p.d + p.C + p.stem2 + p.N * p.tFijo;
-  return { ES, media: fijo + p.N * (p.tVar * p.muQ + p.muW), sd: Math.sqrt(varCajas + varW), fijo, varCajas, varW };
+  // Error del plan por ruta (real − plan): el ruido crece con √N, el sesgo con N
+  const ruidoRuta = Math.sqrt(p.N) * p.ruido, sesgoRuta = p.N * ES * p.sesgo / 100;
+  const sdErr = [Math.sqrt(varCajas + varW), Math.sqrt(varW), 0].map((v) => Math.sqrt(v * v + ruidoRuta * ruidoRuta));
+  return { ES, media: fijo + p.N * (p.tVar * p.muQ + p.muW), sd: Math.sqrt(varCajas + varW), fijo, varCajas, varW, ruidoRuta, sesgoRuta, sdErr };
 }
 
 /* ---------- Muchos días ---------- */
@@ -85,4 +101,4 @@ function correr(p, n, rnd, nrm) {
   return T;
 }
 
-if (typeof module !== 'undefined') module.exports = { PARAMS, DEFAULTS, mulberry32, makeNormal, dia, teoria, correr };
+if (typeof module !== 'undefined') module.exports = { PARAMS, DEFAULTS, MODELOS, DIAS_MES, mulberry32, makeNormal, dia, teoria, correr };

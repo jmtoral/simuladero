@@ -18,3 +18,16 @@ assert(Math.abs(sd / th.sd - 1) < 0.03, `sd ${sd} vs ${th.sd}`);
 const T0 = M.correr(Object.assign({}, p, { cvQ: 0, cvW: 0 }), 10, rnd, nrm);
 assert(T0.every((t) => Math.abs(t - th.media) < 1e-9), 'T determinista');
 console.log(`3/3 OK · media ${mean.toFixed(1)} (teoría ${th.media.toFixed(1)}) · sd ${sd.toFixed(1)} (teoría ${th.sd.toFixed(1)})`);
+// 4. Sin sesgo ni ruido: el plan perfecto es exacto; el de cajas sólo falla por W; el sesgo se acumula N veces
+{
+  const q = Object.assign({}, p), e1 = [], e2 = [];
+  for (let k = 0; k < 50000; k++) { const x = M.dia(q, rnd, nrm); assert(Math.abs(x.plan[2] - x.T) < 1e-9, 'plan perfecto'); e1.push(x.T - x.plan[1]); }
+  const m1 = e1.reduce((a, b) => a + b, 0) / e1.length, s1 = Math.sqrt(e1.reduce((a, b) => a + (b - m1) ** 2, 0) / e1.length);
+  const t = M.teoria(q);
+  assert(Math.abs(m1) < 0.5 && Math.abs(s1 / t.sdErr[1] - 1) < 0.03, `error con cajas ${m1} ± ${s1} vs ${t.sdErr[1]}`);
+  const qs = Object.assign({}, p, { sesgo: -10 });
+  for (let k = 0; k < 20000; k++) { const x = M.dia(qs, rnd, nrm); e2.push(x.T - x.plan[2]); }
+  const m2 = e2.reduce((a, b) => a + b, 0) / e2.length;
+  assert(Math.abs(m2 / -M.teoria(qs).sesgoRuta - 1) < 0.02, `sesgo acumulado ${m2} vs ${-M.teoria(qs).sesgoRuta}`);
+  console.log(`4/4 OK · error con cajas ±${s1.toFixed(1)} min (teoría ${t.sdErr[1].toFixed(1)}) · sesgo −10% → ${m2.toFixed(1)} min por ruta`);
+}
