@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tiempo de mercado de una ruta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="vendor/iso.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: encabezado con la fórmula; el diagrama de la ruta a todo lo ancho; abajo, controles a la izquierda y resultados de miles de días a la derecha.
+   Paleta deliberadamente única (fondo claro, negro y rojo), igual en tema claro y oscuro: el rojo marca lo aleatorio (stay time), el negro y los grises lo fijo. */
+:root {
+  --bg: #f5f5f4; --surface: #ffffff; --soft: #f0f0ef; --ink: #121212; --muted: #5e5e5e; --line: #e0e0de;
+  --stay: #c8102e; --stay-a: #7d0a1c; --stay-c: #ec8b98; --stay-bg: #fdeef0;
+  --g1: #121212; --g2: #6b6b6b; --g3: #b9b9b7; --bad: #c8102e;
+  --f-display: "Barlow Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--f-body); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 24px; }
+@media (min-width: 768px) { .wrap { padding-inline: 32px; } }
+h1, h2 { font-family: var(--f-display); font-weight: 700; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: clamp(32px, 5vw, 46px); line-height: 1.05; }
+h2 { font-size: 22px; line-height: 1.2; }
+p { margin: 0; }
+.eyebrow { font: 600 12px var(--f-display); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.eyebrow a { color: inherit; }
+.muted { color: var(--muted); }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.lead { max-width: 64ch; color: var(--muted); margin-top: 10px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 20px; min-width: 0; }
+.card > header { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.sub { font-size: 13.5px; color: var(--muted); margin-top: 2px; max-width: 70ch; }
+
+/* Fórmula */
+.formula { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 18px; font: 500 15px var(--f-mono); }
+.formula .t { background: var(--soft); border-radius: 4px; padding: 3px 8px; }
+.formula .s { border: 2px solid var(--stay); color: var(--stay); background: var(--stay-bg); border-radius: 4px; padding: 2px 8px; font-weight: 600; }
+.formula .op { color: var(--muted); }
+.formula2 { margin-top: 8px; font: 13.5px var(--f-mono); color: var(--muted); }
+
+/* Botones */
+.btn { font: 500 14px var(--f-body); border-radius: 6px; padding: 8px 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.btn.primary:hover { opacity: .88; }
+.btn:disabled { opacity: .5; cursor: default; }
+:focus-visible { outline: 2px solid var(--stay); outline-offset: 2px; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Diagrama */
+.diagram { overflow-x: auto; }
+
+/* Diorama (kit anatomy): tokens del kit ajustados a la paleta de la página */
+.dio-card { margin: 0 0 18px; position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 34px 8px 30px; overflow: hidden; }
+.dio-corner { position: absolute; font-size: 12px; color: var(--muted); }
+.dio-corner.tl { top: 10px; left: 14px; font: 600 12px var(--f-display); letter-spacing: .08em; text-transform: uppercase; }
+.dio-corner.tr { top: 10px; right: 14px; font: 600 13px var(--f-display); color: var(--ink); }
+.dio-corner.bl { bottom: 9px; left: 14px; }
+.dio-corner.br { bottom: 9px; right: 14px; color: var(--ink); font-size: 12.5px; }
+@media (max-width: 640px) { .dio-corner.bl { display: none; } .dio .iso-svg { width: 118%; margin-left: -9%; } }
+.iso.dio[data-theme="light"] {
+  --anatomy-paper: #ffffff; --anatomy-card: #ffffff; --anatomy-face: #ffffff; --anatomy-top: #ffffff;
+  --anatomy-hi: #121212; --anatomy-lit: #000000; --anatomy-dot: #2a2a2a; --anatomy-red: #c8102e;
+  background: transparent;
+}
+.dio .asphalt > .iso-top, .dio .asphalt > .iso-fill { fill: #e4e4e1; }
+.dio .curb > .iso-top { fill: #f2f2f0; }
+.dio .lawn > .iso-top, .dio .lawn > .iso-fill { fill: #ececea; }
+.dio .walk > .iso-top, .dio .walk > .iso-fill { fill: #f8f8f6; }
+.dio .crown > .iso-top { fill: #e9e9e6; }
+.dio .crown > .iso-shade[data-shade="0"] { fill: #cfcfcb; } .dio .crown > .iso-shade[data-shade="1"] { fill: #d8d8d4; }
+.dio .crown > .iso-shade[data-shade="2"] { fill: #e0e0dc; } .dio .crown > .iso-shade[data-shade="3"] { fill: #e6e6e2; }
+.dio .box > .iso-fill { fill: #fbe1e5; } .dio .box > .iso-top { fill: #f6c7ce; }
+.dio .box > .iso-shade[data-shade="0"] { fill: #d9415a; } .dio .box > .iso-shade[data-shade="1"] { fill: #e35d73; }
+.dio .box > .iso-shade[data-shade="2"] { fill: #eb7d8f; } .dio .box > .iso-shade[data-shade="3"] { fill: #f19dab; }
+.dio .box > .iso-edge { stroke: #8f0b21; } .dio .box > .iso-crease, .dio .box > .iso-bevel { stroke: #fbe1e5; }
+.dio .store.active .awning > .iso-top { fill: #c8102e; }
+.dio .store.active .awning > .iso-shade { fill: #9e0c24; }
+.dio .store.active .body > .iso-edge, .dio .store.active .sign > .iso-edge { stroke: #c8102e; }
+.diagram svg { display: block; width: 100%; min-width: 720px; height: auto; }
+svg text { font-family: var(--f-body); fill: var(--muted); font-size: 12px; }
+.daystat { display: flex; gap: 22px; flex-wrap: wrap; align-items: baseline; }
+.daystat b { font: 700 28px var(--f-display); color: var(--ink); }
+.detail { min-height: 22px; font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+.detail b { color: var(--ink); font-weight: 600; }
+
+/* Cuerpo */
+.body { display: grid; gap: 24px; align-items: start; }
+@media (min-width: 980px) { .body { grid-template-columns: 300px minmax(0, 1fr); } .controls { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); } }
+.results { display: grid; gap: 24px; min-width: 0; }
+
+/* Controles */
+.controls { display: grid; gap: 20px; }
+.group { display: grid; gap: 14px; }
+.group + .group { border-top: 1px solid var(--line); padding-top: 18px; }
+.group h3 { font: 600 16px var(--f-display); margin: 0; letter-spacing: .01em; }
+.ctl { display: grid; gap: 4px; }
+.ctl .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ctl label { font-size: 13.5px; }
+.ctl output { font: 500 13px var(--f-mono); white-space: nowrap; }
+.ctl output small { color: var(--muted); font-size: 11.5px; margin-left: 3px; }
+input[type=range] { width: 100%; margin: 0; accent-color: var(--ink); }
+.stay-group input[type=range] { accent-color: var(--stay); }
+.hint { font: 12.5px var(--f-mono); color: var(--muted); background: var(--soft); border-radius: 4px; padding: 6px 8px; }
+.toast { font-size: 12.5px; color: var(--muted); min-height: 18px; }
+
+/* KPIs */
+.kpis { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 760px) { .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.kpi { background: var(--surface); padding: 14px 16px; display: grid; gap: 2px; align-content: start; }
+.kpi .v { font: 700 30px/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 13px; color: var(--muted); }
+.kpi .th { font: 12px var(--f-mono); color: var(--muted); }
+.kpi.alert .v { color: var(--bad); }
+
+.chart svg { display: block; width: 100%; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); margin-top: 10px; }
+.sw { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.swl { display: inline-block; width: 16px; height: 0; border-top: 2px solid; margin-right: 6px; vertical-align: 3px; }
+.split { display: grid; gap: 12px; margin-top: 16px; }
+@media (min-width: 700px) { .split { grid-template-columns: 1fr 1fr; } }
+.fact { background: var(--soft); border-radius: 6px; padding: 12px 14px; font-size: 14px; }
+.fact b { font: 700 22px var(--f-display); display: block; color: var(--ink); }
+.foot { font-size: 13px; color: var(--muted); }
+.dist-wrap { overflow-x: auto; }
+.dist { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 560px; }
+.dist th { text-align: left; font: 600 13px var(--f-display); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--ink); }
+.dist td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.dist tr.rnd td:first-child { border-left: 3px solid var(--stay); font-weight: 600; }
+.dist tr:not(.rnd) td:first-child { border-left: 3px solid var(--ink); }
+.dist b { color: var(--stay); }
+.plan-group { display: grid; gap: 14px 28px; }
+@media (min-width: 640px) { .plan-group { grid-template-columns: 1fr 1fr; } .plan-group h3 { grid-column: 1 / -1; } }
+.plan-group input[type=range] { accent-color: var(--stay); }
+.cmp { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; }
+.cmp th { text-align: right; font: 600 14px var(--f-display); padding: 8px 10px; border-bottom: 2px solid var(--ink); white-space: nowrap; }
+.cmp th:first-child, .cmp td:first-child { text-align: left; }
+.cmp td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: right; vertical-align: top; }
+.cmp td small { display: block; color: var(--muted); font: 12px var(--f-body); }
+.cmp td.best { color: var(--stay); font-weight: 600; }
+.fact.sesgo b { color: var(--stay); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow"><a href="../../">simuladero</a> · fenómeno 1</div>
+    <h1>Tiempo de mercado de una ruta</h1>
+    <p class="lead">Una sola ruta, simulada miles de días. Los traslados, la comida y los STEM son fijos; lo único que cambia de un día a otro es el stay time de cada cliente, que depende de las cajas y de un residual operativo.</p>
+    <div class="formula" aria-label="Tiempo de mercado = STEM 1 + suma de stay times + traslados + comida + STEM 2">
+      <span class="t">STEM₁</span><span class="op">+</span><span class="s">Σ Stay time</span><span class="op">+</span><span class="t">(N − 1)·d</span><span class="op">+</span><span class="t">Comida</span><span class="op">+</span><span class="t">STEM₂</span>
+    </div>
+    <div class="formula2">Stay time del cliente i = t_fijo + t_var × cajas<sub>i</sub> + W<sub>i</sub></div>
+  </header>
+
+  <section class="card">
+    <header>
+      <div>
+        <h2>Un día en la ruta</h2>
+        <p class="sub">El camión sale del CEDIS, visita a cada cliente en orden, para a comer y regresa. En cada tiendita se apilan las cajas que se descargan; abajo, las barras rojas son el stay time de cada cliente ese día.</p>
+      </div>
+      <div class="btns"><button class="btn primary" id="b-day">Simular un día</button></div>
+    </header>
+    <figure class="dio-card">
+      <div class="dio-corner tl">Fig 1</div><div class="dio-corner tr">Ruta en miniatura</div>
+      <div class="iso dio" data-theme="light" id="dio"></div>
+      <div class="dio-corner bl">Una tiendita por cliente · cajas en rojo</div><div class="dio-corner br mono" id="dio-readout" data-readout>—</div>
+    </figure>
+    <div class="daystat">
+      <span class="muted">Día <span class="mono" id="d-num">1</span></span>
+      <span>Reloj <b class="mono" id="d-clock">07:00</b></span>
+      <span>Tiempo de mercado <b id="d-T">—</b></span>
+      <span>Σ stay time <b id="d-S" style="color:var(--stay)">—</b></span>
+    </div>
+    <div class="diagram"><svg id="route" viewBox="0 0 1000 250" role="img" aria-label="Diagrama de la ruta: salida de la UO, clientes con su stay time, comida y regreso"></svg></div>
+    <p class="detail" id="detail"></p>
+  </section>
+
+  <div class="body">
+    <aside class="card controls" id="controls" aria-label="Parámetros"></aside>
+
+    <div class="results">
+      <section class="card">
+        <header>
+          <div>
+            <h2>Miles de días</h2>
+            <p class="sub">Cada día sortea cajas y residual para todos los clientes. Al cambiar un parámetro se reinicia con 2,000 días.</p>
+          </div>
+          <div class="btns">
+            <button class="btn" id="b-1k">+1,000 días</button>
+            <button class="btn primary" id="b-10k">+10,000 días</button>
+            <button class="btn" id="b-reset">Reiniciar</button>
+          </div>
+        </header>
+        <div class="kpis">
+          <div class="kpi"><span class="l">Promedio</span><span class="v" id="k-mean">—</span><span class="th" id="k-mean-th"></span></div>
+          <div class="kpi"><span class="l">Desviación estándar</span><span class="v" id="k-sd">—</span><span class="th" id="k-sd-th"></span></div>
+          <div class="kpi"><span class="l">8 de cada 10 días, entre</span><span class="v" id="k-range">—</span><span class="th">percentiles 10 y 90</span></div>
+          <div class="kpi" id="k-over-box"><span class="l">Días que pasan la jornada</span><span class="v" id="k-over">—</span><span class="th" id="k-over-th"></span></div>
+        </div>
+        <div class="chart" style="margin-top:18px"><svg id="hist" viewBox="0 0 900 320" role="img" aria-label="Histograma del tiempo de mercado"></svg></div>
+        <div class="legend">
+          <span><span class="sw" style="background:var(--stay)"></span>Días simulados (<span class="mono" id="n-days">0</span>)</span>
+          <span><span class="swl" style="border-color:var(--ink);border-top-style:dashed"></span>Curva normal teórica</span>
+          <span><span class="swl" style="border-color:var(--ink);border-top-width:3px"></span>Jornada objetivo</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <header>
+          <div>
+            <h2>Anatomía del tiempo de mercado</h2>
+            <p class="sub">El día promedio, separado en sus piezas. Negro y gris: lo que se repite igual cada día. Rojo: el stay time.</p>
+          </div>
+        </header>
+        <div class="chart"><svg id="anat" viewBox="0 0 900 120" role="img" aria-label="Composición del tiempo de mercado promedio"></svg></div>
+        <div class="legend" id="anat-legend"></div>
+        <div class="split">
+          <div class="fact"><b id="f-share">—</b>del día promedio es stay time. Es la única parte que varía.</div>
+          <div class="fact"><b id="f-var">—</b><span id="f-var-txt"></span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <header>
+          <div>
+            <h2>¿Qué tan bueno es el plan?</h2>
+            <p class="sub">El ruteador arma cada día con stay times <b>predichos</b>. Aquí, los mismos días simulados se planean con tres modelos: el promedio de siempre para todos los clientes, un modelo que usa las cajas de la preventa, y uno perfecto como referencia. Lo que el plan no anticipa se vuelve horas extra o clientes sin visitar; lo que planea de más, capacidad pagada sin usar.</p>
+          </div>
+        </header>
+        <div id="plan-controls"></div>
+        <div class="dist-wrap" style="margin-top:16px"><table class="cmp" id="cmp"></table></div>
+        <div class="chart" style="margin-top:18px"><svg id="err" viewBox="0 0 900 260" role="img" aria-label="Histograma del error del plan por ruta para cada modelo"></svg></div>
+        <div class="legend">
+          <span><span class="swl" style="border-color:var(--g2);border-top-style:dashed"></span>Promedio único</span>
+          <span><span class="sw" style="background:var(--stay)"></span>Modelo con cajas</span>
+          <span><span class="swl" style="border-color:var(--ink)"></span>Perfecto</span>
+        </div>
+        <div class="split">
+          <div class="fact"><b id="f-ruido">—</b>por ruta, si cada cliente se predice con un error <i>al azar</i> de ±5 min. Con <span id="f-n"></span> clientes los errores se compensan entre sí: crece con √N.</div>
+          <div class="fact sesgo"><b id="f-sesgo">—</b>por ruta, todos los días y siempre del mismo lado, si el modelo se equivoca 5 min <i>en la misma dirección</i> con cada uno de los <span id="f-n2"></span> clientes: crece con N.</div>
+        </div>
+        <p class="sub" style="margin-top:12px">Ni el mejor modelo de cajas llega al perfecto: el residual W (espera, cobro, firma) no se puede predecir con las cajas. Para acercarse habría que medir o explicar W. Lo que sí está en manos del modelo es no tener sesgo: un sesgo pequeño por cliente se convierte en horas por ruta.</p>
+      </section>
+
+      <section class="card">
+        <header>
+          <div>
+            <h2>Qué se sortea cada día</h2>
+            <p class="sub">Cada cliente de cada día recibe cajas y residual nuevos, independientes entre sí y entre clientes. Todo lo demás es fijo.</p>
+          </div>
+        </header>
+        <div class="dist-wrap">
+          <table class="dist">
+            <thead><tr><th>Variable</th><th>Distribución</th><th>Parámetros</th></tr></thead>
+            <tbody>
+              <tr class="rnd"><td>Cajas Q<sub>i</sub></td><td><b>Lognormal</b>, redondeada al entero más cercano (≥ 0)</td><td>Media = cajas promedio; CV = variabilidad de las cajas</td></tr>
+              <tr class="rnd"><td>Residual W<sub>i</sub></td><td><b>Lognormal</b> continua (&gt; 0)</td><td>Media = W promedio; CV = variabilidad de W</td></tr>
+              <tr><td>Stay time S<sub>i</sub></td><td>Derivada, no se sortea</td><td class="mono">t_fijo + t_var · Q<sub>i</sub> + W<sub>i</sub></td></tr>
+              <tr><td>STEM₁, STEM₂, d, comida</td><td>Constantes</td><td>El valor de su control, igual todos los días</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="sub" style="margin-top:12px">La lognormal se arma con la media m y el CV que pongas: σ² = ln(1 + CV²) y μ = ln(m) − σ²/2, así que su promedio es exactamente m. Es asimétrica, con cola a la derecha: no hay cajas ni tiempos negativos y, de vez en cuando, aparece un cliente muy pesado o una espera muy larga. Con CV = 0 la variable se vuelve constante.</p>
+        <p class="foot" style="margin-top:10px">La comida va después del cliente ⌈N/2⌉; su posición no cambia el total. Valores de fábrica en <span class="mono">PARAMS</span>, al inicio de <span class="mono">motor.js</span>. Verificación: <span class="mono">node ruta/prueba.js</span>.</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script src="motor.js"></script>
+<script src="vendor/iso-kit.js"></script>
+<script src="diorama.js"></script>
+<script>
+(function () {
+const $ = (id) => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const fmt = (d) => new Intl.NumberFormat('es-MX', { minimumFractionDigits: d, maximumFractionDigits: d });
+const f0 = fmt(0), f1 = fmt(1);
+const hm = (min) => { const m = Math.round(min); return Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0') + ' h'; };
+const clock = (min) => { const t = 7 * 60 + Math.round(min); return String(Math.floor(t / 60) % 24).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); };
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function el(tag, attrs, parent, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+/* ---------- Estado: fábrica ← enlace ---------- */
+const spec = Object.fromEntries(PARAMS.map((r) => [r[1], r]));
+const clamp = (k, v) => Math.min(spec[k][5], Math.max(spec[k][4], v));
+let p = Object.assign({}, DEFAULTS);
+new URLSearchParams(location.hash.slice(1)).forEach((v, k) => { if (k in spec && isFinite(+v)) p[k] = clamp(k, +v); });
+function writeHash() {
+  const q = new URLSearchParams();
+  for (const k in p) if (p[k] !== DEFAULTS[k]) q.set(k, p[k]);
+  history.replaceState(null, '', q.toString() ? '#' + q : location.pathname);
+}
+
+/* ---------- Controles ---------- */
+const GROUPS = [['ruta', 'La ruta'], ['stay', 'El stay time de cada cliente'], ['jornada', 'La jornada'], ['modelo', 'Defectos del modelo']];
+const outs = {};
+function buildControls() {
+  GROUPS.forEach(([g, title]) => {
+    const box = g === 'modelo' ? $('plan-controls') : $('controls');
+    const sec = document.createElement('div'); sec.className = 'group' + (g === 'stay' ? ' stay-group' : '') + (g === 'modelo' ? ' plan-group' : '');
+    sec.innerHTML = `<h3>${title}</h3>`;
+    PARAMS.filter((r) => r[0] === g).forEach(([, k, label, , min, max, step, unit]) => {
+      const c = document.createElement('div'); c.className = 'ctl';
+      c.innerHTML = `<div class="row"><label for="r-${k}">${label}</label><output for="r-${k}" id="o-${k}"></output></div>
+        <input type="range" id="r-${k}" min="${min}" max="${max}" step="${step}" value="${p[k]}">`;
+      const input = c.querySelector('input');
+      input.addEventListener('input', () => { p[k] = +input.value; showValue(k, unit); onChange(); });
+      outs[k] = () => showValue(k, unit);
+      sec.appendChild(c);
+    });
+    if (g === 'stay') { const h = document.createElement('div'); h.className = 'hint'; h.id = 'hint'; sec.appendChild(h); }
+    box.appendChild(sec);
+  });
+  const tools = document.createElement('div'); tools.className = 'group';
+  tools.innerHTML = `<div class="btns"><button class="btn" id="b-link">Copiar enlace</button><button class="btn" id="b-defaults">Valores de fábrica</button></div><div class="toast" id="toast" role="status"></div>`;
+  $("controls").appendChild(tools);
+  $('b-link').onclick = () => {
+    writeHash();
+    const done = () => say('Enlace copiado: abre este escenario tal cual.');
+    navigator.clipboard ? navigator.clipboard.writeText(location.href).then(done, () => say(location.href)) : say(location.href);
+  };
+  $('b-defaults').onclick = () => { p = Object.assign({}, DEFAULTS); PARAMS.forEach((r) => { $('r-' + r[1]).value = p[r[1]]; outs[r[1]](); }); onChange(); say('Valores de fábrica.'); };
+  for (const k in outs) outs[k]();
+}
+function showValue(k, unit) {
+  const v = p[k], d = spec[k][6] < 1 ? (spec[k][6] < 0.1 ? 2 : 1) : 0;
+  $('o-' + k).innerHTML = (k === 'limite' ? hm(v) : fmt(d).format(v) + (unit ? `<small>${unit}</small>` : ''));
+}
+function say(msg) { $('toast').textContent = msg; clearTimeout(say.t); say.t = setTimeout(() => { $('toast').textContent = ''; }, 3000); }
+
+/* ---------- Simulación de muchos días ---------- */
+let sim, debounce;
+function onChange() { writeHash(); updateHint(); clearTimeout(debounce); debounce = setTimeout(() => { resetSim(); newDay(false); addDays(2000); }, 150); }
+function updateHint() {
+  const th = teoria(p);
+  $('hint').textContent = `Stay promedio = ${fmt(1).format(p.tFijo)} + ${fmt(2).format(p.tVar)} × ${f0.format(p.muQ)} + ${fmt(1).format(p.muW)} = ${f1.format(th.ES)} min`;
+}
+function resetSim() {
+  const th = teoria(p);
+  const lo = Math.max(0, Math.min(th.media - 3.5 * th.sd, p.limite - th.sd)), hi = Math.max(th.media + 5 * th.sd, p.limite + th.sd, lo + 30);
+  const rnd = mulberry32(12345);
+  sim = { th, rnd, nrm: makeNormal(rnd), T: [], sum: 0, sum2: 0, over: 0, lo, hi, bins: new Array(60).fill(0), parts: null, nParts: 0, busy: false };
+  // error del plan (real − plan) por modelo
+  const eR = Math.max(30, Math.abs(th.sesgoRuta) + 4.2 * th.sdErr[0]);
+  sim.plan = { eLo: -eR, eHi: eR, m: MODELOS.map(() => ({ sum: 0, sum2: 0, abs: 0, sinAviso: 0, extra: 0, ocioso: 0, bins: new Array(61).fill(0) })) };
+  drawStats();
+}
+function addDays(n) {
+  if (sim.busy) return;
+  sim.busy = true; setBusy(true);
+  let left = n;
+  const batch = () => {
+    const k = Math.min(left, reduced ? left : 500);
+    for (let i = 0; i < k; i++) {
+      const x = dia(p, sim.rnd, sim.nrm), t = x.T;
+      sim.T.push(t); sim.sum += t; sim.sum2 += t * t; if (t > p.limite) sim.over++;
+      const b = Math.floor((t - sim.lo) / (sim.hi - sim.lo) * sim.bins.length);
+      sim.bins[Math.min(sim.bins.length - 1, Math.max(0, b))]++;
+      if (!sim.parts) sim.parts = Object.fromEntries(Object.keys(x.partes).map((q) => [q, 0]));
+      for (const q in x.partes) sim.parts[q] += x.partes[q];
+      sim.nParts++;
+      const P = sim.plan;
+      x.plan.forEach((tp, j) => {
+        const e = t - tp, m = P.m[j];
+        m.sum += e; m.sum2 += e * e; m.abs += Math.abs(e);
+        if (tp <= p.limite && t > p.limite) m.sinAviso++;
+        if (e > 0) m.extra += e; else m.ocioso -= e;
+        const eb = Math.floor((e - P.eLo) / (P.eHi - P.eLo) * m.bins.length);
+        m.bins[Math.min(m.bins.length - 1, Math.max(0, eb))]++;
+      });
+    }
+    left -= k;
+    drawStats();
+    if (left > 0) requestAnimationFrame(batch); else { sim.busy = false; setBusy(false); }
+  };
+  requestAnimationFrame(batch);
+}
+function setBusy(b) { ['b-1k', 'b-10k', 'b-reset'].forEach((id) => { $(id).disabled = b; }); }
+$('b-1k').onclick = () => addDays(1000);
+$('b-10k').onclick = () => addDays(10000);
+$('b-reset').onclick = () => { resetSim(); };
+
+function quantile(sorted, q) { const pos = (sorted.length - 1) * q, lo = Math.floor(pos), hi = Math.ceil(pos); return sorted[lo] + (sorted[hi] - sorted[lo]) * (pos - lo); }
+function drawStats() {
+  const n = sim.T.length, th = sim.th;
+  $('n-days').textContent = f0.format(n);
+  $('k-mean-th').textContent = 'teoría ' + hm(th.media);
+  $('k-sd-th').textContent = 'teoría ' + f0.format(th.sd) + ' min';
+  $('k-over-th').textContent = 'más de ' + hm(p.limite);
+  if (!n) { ['k-mean', 'k-sd', 'k-range', 'k-over'].forEach((id) => { $(id).textContent = '—'; }); drawHist(); drawAnat(); drawPlan(); return; }
+  const mean = sim.sum / n, sd = Math.sqrt(Math.max(0, sim.sum2 / n - mean * mean));
+  $('k-mean').textContent = hm(mean);
+  $('k-sd').textContent = f0.format(sd) + ' min';
+  const s = Float64Array.from(sim.T).sort();
+  $('k-range').textContent = hm(quantile(s, 0.1)).replace(' h', '') + '–' + hm(quantile(s, 0.9));
+  const share = sim.over / n;
+  $('k-over').textContent = f0.format(share * 100) + '%';
+  $('k-over-box').classList.toggle('alert', share >= 0.2);
+  drawHist(); drawAnat(); drawPlan();
+}
+
+/* ---------- Histograma ---------- */
+function drawHist() {
+  const svg = $('hist'); svg.innerHTML = '';
+  const W = 900, H = 320, L = 46, R = 16, T = 18, B = 40;
+  const { lo, hi, bins, th } = sim, n = sim.T.length, bw = (hi - lo) / bins.length;
+  const X = (v) => L + (W - L - R) * (v - lo) / (hi - lo);
+  const pdfPeak = bw / (th.sd * Math.sqrt(2 * Math.PI));
+  const shares = bins.map((c) => (n ? c / n : 0));
+  const ymax = Math.max(pdfPeak, ...shares) * 1.12 || 1;
+  const Y = (v) => H - B - (H - B - T) * v / ymax;
+  // rejilla horizontal (% de días por barra)
+  const step = ymax > 0.08 ? 0.02 : ymax > 0.04 ? 0.01 : 0.005;
+  for (let v = 0; v <= ymax; v += step) {
+    el('line', { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: 'var(--line)', 'stroke-width': v === 0 ? 1.5 : 1 }, svg);
+    el('text', { x: L - 8, y: Y(v) + 4, 'text-anchor': 'end' }, svg, fmt(step < 0.01 ? 1 : 0).format(v * 100) + '%');
+  }
+  // eje x en horas
+  const tickStep = (hi - lo) > 360 ? 60 : 30;
+  for (let t = Math.ceil(lo / tickStep) * tickStep; t <= hi; t += tickStep) {
+    el('line', { x1: X(t), x2: X(t), y1: H - B, y2: H - B + 5, stroke: 'var(--muted)' }, svg);
+    el('text', { x: X(t), y: H - B + 20, 'text-anchor': 'middle' }, svg, hm(t).replace(' h', ''));
+  }
+  el('text', { x: W - R, y: H - 4, 'text-anchor': 'end' }, svg, 'Tiempo de mercado (h:mm)');
+  // barras
+  shares.forEach((v, i) => {
+    if (!v) return;
+    el('rect', { x: X(lo + i * bw) + 0.5, y: Y(v), width: Math.max(0.5, X(lo + bw) - X(lo) - 1), height: Y(0) - Y(v), fill: 'var(--stay)', 'fill-opacity': 0.85 }, svg);
+  });
+  // curva normal teórica
+  let d = '';
+  for (let k = 0; k <= 200; k++) {
+    const x = lo + (hi - lo) * k / 200, z = (x - th.media) / th.sd;
+    d += (k ? 'L' : 'M') + X(x).toFixed(1) + ',' + Y(pdfPeak * Math.exp(-z * z / 2)).toFixed(1);
+  }
+  el('path', { d, fill: 'none', stroke: 'var(--ink)', 'stroke-width': 1.5, 'stroke-dasharray': '5 4' }, svg);
+  // jornada objetivo
+  el('line', { x1: X(p.limite), x2: X(p.limite), y1: T, y2: H - B, stroke: 'var(--ink)', 'stroke-width': 3 }, svg);
+  el('text', { x: X(p.limite) + 6, y: T + 12, style: 'fill:var(--ink);font-weight:600' }, svg, 'jornada ' + hm(p.limite));
+  if (!n) el('text', { x: W / 2, y: H / 2, 'text-anchor': 'middle', style: 'font-size:14px' }, svg, 'Presiona +1,000 días para empezar');
+}
+
+/* ---------- Anatomía ---------- */
+const PARTS = [
+  ['stem1', 'STEM₁', '--g1', 1], ['traslados', 'Traslados', '--g2', 1], ['comida', 'Comida', '--g3', 0], ['stem2', 'STEM₂', '--g1', 1],
+  ['fijo', 'Stay: t_fijo', '--stay-a', 1], ['variable', 'Stay: cajas', '--stay', 1], ['residual', 'Stay: residual W', '--stay-c', 0],
+];
+function drawAnat() {
+  const svg = $('anat'); svg.innerHTML = '';
+  if (!sim.nParts) return;
+  const m = Object.fromEntries(Object.entries(sim.parts).map(([k, v]) => [k, v / sim.nParts]));
+  const total = Object.values(m).reduce((a, b) => a + b, 0);
+  const W = 900, L = 0, R = 0, y = 30, h = 46, sx = (W - L - R) / total;
+  let x = L;
+  PARTS.forEach(([k, name, c, light]) => {
+    const w = m[k] * sx;
+    if (w <= 0) return;
+    const r = el('rect', { x, y, width: w, height: h, fill: `var(${c})`, stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
+    el('title', {}, r, `${name}: ${f0.format(m[k])} min`);
+    if (w > 46) el('text', { x: x + w / 2, y: y + h / 2 + 5, 'text-anchor': 'middle', style: `fill:var(${light ? '--surface' : '--ink'});font-family:var(--f-mono);font-size:12.5px` }, svg, f0.format(m[k]));
+    x += w;
+  });
+  // llave de "stay time"
+  const sStart = (m.stem1 + m.traslados + m.comida + m.stem2) * sx;
+  el('path', { d: `M${sStart + 2},${y - 8} v-6 H${W - 2} v6`, fill: 'none', stroke: 'var(--stay)', 'stroke-width': 1.5 }, svg);
+  el('text', { x: (sStart + W) / 2, y: y - 18, 'text-anchor': 'middle', style: 'fill:var(--stay);font-weight:600' }, svg, 'Σ Stay time');
+  el('text', { x: 0, y: y + h + 24 }, svg, '0');
+  el('text', { x: W, y: y + h + 24, 'text-anchor': 'end' }, svg, hm(total) + ' en promedio · cifras en minutos');
+  $('anat-legend').innerHTML = PARTS.map(([, n, c]) => `<span><span class="sw" style="background:var(${c})"></span>${n}</span>`).join('');
+  const stay = m.fijo + m.variable + m.residual;
+  $('f-share').textContent = f0.format(stay / total * 100) + '%';
+  const th = sim.th, tot = th.varCajas + th.varW;
+  if (tot > 0) {
+    $('f-var').textContent = f0.format(th.varCajas / tot * 100) + '% / ' + f0.format(th.varW / tot * 100) + '%';
+    $('f-var-txt').textContent = 'de la variación entre días viene de las cajas / del residual W.';
+  } else { $('f-var').textContent = '0 min'; $('f-var-txt').textContent = 'de variación: sin incertidumbre, todos los días son iguales.'; }
+}
+
+/* ---------- Plan vs. real ---------- */
+const MCOL = ['var(--g2)', 'var(--stay)', 'var(--ink)'];
+function drawPlan() {
+  const n = sim.T.length, P = sim.plan, th = sim.th;
+  const sumT = sim.sum;
+  const st = P.m.map((m) => {
+    const mean = n ? m.sum / n : 0;
+    return { mean, sd: n ? Math.sqrt(Math.max(0, m.sum2 / n - mean * mean)) : 0, aser: n ? 1 - m.abs / sumT : NaN,
+      sinAviso: n ? m.sinAviso / n : 0, extra: n ? m.extra / n * DIAS_MES / 60 : 0, ocioso: n ? m.ocioso / n * DIAS_MES / 60 : 0 };
+  });
+  const pct = (v) => (isFinite(v) ? fmt(1).format(v * 100) + '%' : '—');
+  const sgn = (v) => (Math.round(v) > 0 ? '+' : Math.round(v) < 0 ? '−' : '') + f0.format(Math.abs(v));
+  const best = (vals, low) => { const t = low ? Math.min(...vals) : Math.max(...vals); return vals.map((v) => Math.abs(v - t) < 1e-9); };
+  const rows = [
+    ['Asertividad ruta-día', st.map((s) => s.aser), pct, false, '1 − Σ|real − plan| / Σ real'],
+    ['Error típico del plan', st.map((s) => s.sd), (v) => '±' + f0.format(v) + ' min', true, 'desviación estándar de real − plan'],
+    ['Sesgo promedio', st.map((s) => s.mean), (v) => sgn(v) + ' min', null, 'positivo: la ruta tarda más de lo planeado'],
+    ['Días que se pasan de la jornada sin que el plan lo anticipara', st.map((s) => s.sinAviso), pct, true, ''],
+    ['Horas no planeadas por ruta al mes', st.map((s) => s.extra), (v) => f1.format(v) + ' h', true, `real > plan, ${DIAS_MES} días`],
+    ['Horas planeadas de más por ruta al mes', st.map((s) => s.ocioso), (v) => f1.format(v) + ' h', true, 'plan > real: capacidad sin usar'],
+  ];
+  $('cmp').innerHTML = `<thead><tr><th></th>${MODELOS.map((m, j) => `<th><span class="sw" style="background:${MCOL[j]}"></span>${m}</th>`).join('')}</tr></thead><tbody>` +
+    rows.map(([l, vals, f, low, note]) => {
+      const b = low === null ? vals.map(() => false) : best(vals, low);
+      return `<tr><td>${l}${note ? `<small>${note}</small>` : ''}</td>${vals.map((v, j) => `<td class="mono${b[j] && j < 2 ? ' best' : ''}">${n ? f(v) : '—'}</td>`).join('')}</tr>`;
+    }).join('') + '</tbody>';
+
+  // Histograma del error
+  const svg = $('err'); svg.innerHTML = '';
+  const W = 900, H = 260, L = 46, R = 16, T = 14, B = 40, nb = P.m[0].bins.length, bw = (P.eHi - P.eLo) / nb;
+  const X = (v) => L + (W - L - R) * (v - P.eLo) / (P.eHi - P.eLo);
+  const shares = P.m.map((m) => m.bins.map((c) => (n ? c / n : 0)));
+  const ymax = Math.max(0.01, ...shares[0], ...shares[1]) * 1.15;
+  const Y = (v) => H - B - (H - B - T) * Math.min(v, ymax) / ymax;
+  const step = ymax > 0.08 ? 0.02 : ymax > 0.04 ? 0.01 : 0.005;
+  for (let v = 0; v <= ymax; v += step) {
+    el('line', { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: 'var(--line)' }, svg);
+    el('text', { x: L - 8, y: Y(v) + 4, 'text-anchor': 'end' }, svg, fmt(step < 0.01 ? 1 : 0).format(v * 100) + '%');
+  }
+  const tick = (P.eHi - P.eLo) > 300 ? 60 : (P.eHi - P.eLo) > 120 ? 30 : 10;
+  for (let t = Math.ceil(P.eLo / tick) * tick; t <= P.eHi; t += tick) {
+    el('text', { x: X(t), y: H - B + 20, 'text-anchor': 'middle' }, svg, (t > 0 ? '+' : t < 0 ? '−' : '') + Math.abs(t));
+  }
+  el('line', { x1: X(0), x2: X(0), y1: T, y2: H - B, stroke: 'var(--ink)', 'stroke-dasharray': '2 3' }, svg);
+  el('text', { x: L + 4, y: T + 10 }, svg, '← tardó menos de lo planeado');
+  el('text', { x: W - R, y: T + 10, 'text-anchor': 'end' }, svg, 'tardó más de lo planeado →');
+  el('text', { x: W - R, y: H - 4, 'text-anchor': 'end' }, svg, 'Error del plan por ruta: real − plan (min)');
+  shares.forEach((c, j) => {
+    let d = `M${X(P.eLo)},${Y(0)}`;
+    c.forEach((v, i) => { d += `L${X(P.eLo + i * bw)},${Y(v)}L${X(P.eLo + (i + 1) * bw)},${Y(v)}`; });
+    d += `L${X(P.eHi)},${Y(0)}`;
+    el('path', j === 1 ? { d: d + 'Z', fill: MCOL[j], 'fill-opacity': 0.18, stroke: MCOL[j], 'stroke-width': 2 }
+      : { d, fill: 'none', stroke: MCOL[j], 'stroke-width': j === 2 ? 2 : 1.5, ...(j === 0 ? { 'stroke-dasharray': '5 3' } : {}) }, svg);
+    const peak = Math.max(...c);
+    if (peak > ymax) { const i = c.indexOf(peak); el('text', { x: X(P.eLo + (i + 1) * bw) + 8, y: T + 30, style: 'fill:var(--ink);font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:4px' }, svg, `↑ ${MODELOS[j]}: ${f0.format(peak * 100)}% de los días aquí`); }
+  });
+  el('line', { x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: 'var(--muted)' }, svg);
+
+  // Ruido vs. sesgo, con un error de 5 min por cliente
+  const e5 = 5;
+  $('f-ruido').textContent = '±' + f0.format(e5 * Math.sqrt(p.N)) + ' min';
+  $('f-sesgo').textContent = f0.format(e5 * p.N) + ' min';
+  $('f-n').textContent = p.N; $('f-n2').textContent = p.N;
+}
+
+/* ---------- Un día animado ---------- */
+let day = null, dayNum = 0, anim = null;
+const dayRnd = mulberry32(777), dayNrm = makeNormal(dayRnd);
+function newDay(animate) {
+  dayNum++;
+  day = dia(p, dayRnd, dayNrm);
+  buildTimeline();
+  drawRoute();
+  Diorama.build($('dio'), p, day, (text) => { const r = $('dio-readout'); if (r.textContent !== text) r.textContent = text; });
+  $('d-num').textContent = dayNum;
+  if (animate && !reduced) play(); else finish();
+}
+function buildTimeline() {
+  // eventos en orden: viajar, quedarse, comer
+  const ev = []; let t = 0;
+  ev.push({ k: 'mov', from: -1, to: 0, t0: t, t1: (t += p.stem1) });
+  day.clientes.forEach((c, i) => {
+    ev.push({ k: 'stay', i, t0: t, t1: (t += c.S) });
+    if (i === day.comidaTras && i < p.N - 1) {
+      ev.push({ k: 'mov', from: i, to: i + 0.5, t0: t, t1: (t += p.d / 2) });
+      ev.push({ k: 'comida', at: i + 0.5, t0: t, t1: (t += p.C) });
+      ev.push({ k: 'mov', from: i + 0.5, to: i + 1, t0: t, t1: (t += p.d / 2) });
+    } else if (i < p.N - 1) ev.push({ k: 'mov', from: i, to: i + 1, t0: t, t1: (t += p.d) });
+  });
+  if (day.comidaTras >= p.N - 1) ev.push({ k: 'comida', at: p.N - 1, t0: t, t1: (t += p.C) });
+  ev.push({ k: 'mov', from: p.N - 1, to: p.N, t0: t, t1: (t += p.stem2) });
+  day.ev = ev; day.end = t;
+}
+let geo = null;
+function drawRoute() {
+  const svg = $('route'); svg.innerHTML = '';
+  const W = 1000, lineY = 168, x0 = 40, x1 = W - 40, stemW = 120;
+  const gap = (x1 - x0 - 2 * stemW) / Math.max(1, p.N - 1);
+  const X = (pos) => pos < 0 ? x0 : pos >= p.N ? x1 : x0 + stemW + pos * gap;
+  const maxS = Math.max(...day.clientes.map((c) => c.S), 1);
+  const barTop = 24, barBottom = lineY - 26, barH = (v) => (barBottom - barTop) * v / maxS;
+  const bw = Math.min(26, gap * 0.62);
+  geo = { X, lineY, barBottom, barH, bars: [] };
+  // línea de la ruta
+  el('line', { x1: x0, x2: X(0), y1: lineY, y2: lineY, stroke: 'var(--g2)', 'stroke-width': 3, 'stroke-dasharray': '7 6' }, svg);
+  el('line', { x1: X(0), x2: X(p.N - 1), y1: lineY, y2: lineY, stroke: 'var(--ink)', 'stroke-width': 3 }, svg);
+  el('line', { x1: X(p.N - 1), x2: x1, y1: lineY, y2: lineY, stroke: 'var(--g2)', 'stroke-width': 3, 'stroke-dasharray': '7 6' }, svg);
+  el('text', { x: (x0 + X(0)) / 2, y: lineY + 22, 'text-anchor': 'middle' }, svg, 'STEM₁ ' + f0.format(p.stem1) + ' min');
+  el('text', { x: (X(p.N - 1) + x1) / 2, y: lineY + 22, 'text-anchor': 'middle' }, svg, 'STEM₂ ' + f0.format(p.stem2) + ' min');
+  // inicio y fin
+  [[x0, 'Inicio'], [x1, 'Fin']].forEach(([x, t]) => {
+    el('circle', { cx: x, cy: lineY, r: 14, fill: 'var(--surface)', stroke: 'var(--ink)', 'stroke-width': 2.5 }, svg);
+    el('text', { x, y: lineY + 34, 'text-anchor': 'middle', style: 'fill:var(--ink);font-weight:600' }, svg, t);
+    el('text', { x, y: lineY + 4, 'text-anchor': 'middle', style: 'fill:var(--ink);font-size:9px;font-weight:600' }, svg, 'UO');
+  });
+  // comida
+  const cAt = day.comidaTras < p.N - 1 ? day.comidaTras + 0.5 : p.N - 1;
+  const cx = X(cAt);
+  el('rect', { x: cx - 26, y: lineY + 38, width: 52, height: 20, rx: 10, fill: 'var(--soft)', stroke: 'var(--g2)' }, svg);
+  el('text', { x: cx, y: lineY + 52, 'text-anchor': 'middle', style: 'fill:var(--ink);font-size:11.5px' }, svg, 'comida');
+  el('line', { x1: cx, x2: cx, y1: lineY + 8, y2: lineY + 38, stroke: 'var(--g2)', 'stroke-dasharray': '2 3' }, svg);
+  // clientes
+  day.clientes.forEach((c, i) => {
+    const x = X(i), g = el('g', { tabindex: 0, style: 'cursor:default', 'aria-label': `Cliente ${i + 1}: ${c.Q} cajas, ${f1.format(c.S)} minutos` }, svg);
+    el('rect', { x: x - bw / 2, y: barBottom - barH(c.S), width: bw, height: barH(c.S), fill: 'var(--stay-bg)', stroke: 'var(--stay)', 'stroke-width': 1 }, g);
+    const fill = el('rect', { x: x - bw / 2, y: barBottom, width: bw, height: 0, fill: 'var(--stay)' }, g);
+    if (gap >= 34) el('text', { x, y: barBottom - barH(c.S) - 6, 'text-anchor': 'middle', style: 'font-family:var(--f-mono);font-size:11px;fill:var(--ink)' }, g, f0.format(c.S));
+    el('rect', { x: x - 9, y: lineY - 9, width: 18, height: 18, rx: 3, fill: 'var(--surface)', stroke: 'var(--stay)', 'stroke-width': 2.5 }, g);
+    if (gap >= 22 || i % 2 === 0) el('text', { x, y: lineY + (gap >= 34 ? 26 : 26), 'text-anchor': 'middle', style: 'font-size:11px' }, g, 'C' + (i + 1));
+    el('rect', { x: x - gap / 2, y: barTop - 10, width: gap, height: lineY - barTop + 40, fill: 'transparent' }, g);
+    const show = () => explain(i);
+    g.addEventListener('mouseenter', show); g.addEventListener('focus', show);
+    geo.bars.push({ fill, S: c.S });
+  });
+  el('text', { x: x0, y: 14 }, svg, 'Stay time (min)');
+  geo.truck = el('g', {}, svg);
+  el('rect', { x: -12, y: -26, width: 24, height: 15, rx: 3, fill: 'var(--ink)' }, geo.truck);
+  el('circle', { cx: -6, cy: -10, r: 3, fill: 'var(--ink)' }, geo.truck);
+  el('circle', { cx: 6, cy: -10, r: 3, fill: 'var(--ink)' }, geo.truck);
+  let maxI = 0; day.clientes.forEach((c, i) => { if (c.S > day.clientes[maxI].S) maxI = i; });
+  explain(maxI, true);
+}
+function explain(i, longest) {
+  const c = day.clientes[i];
+  $('detail').innerHTML = `${longest ? 'El stay más largo del día: ' : ''}<b>Cliente ${i + 1}</b> · ${c.Q} cajas → ${fmt(1).format(p.tFijo)} + ${fmt(2).format(p.tVar)} × ${c.Q} + ${f1.format(c.W)} (W) = <b>${f1.format(c.S)} min</b>`;
+}
+function frame(t) {
+  Diorama.frame(t);
+  const ev = day.ev.find((e) => t >= e.t0 && t < e.t1) || day.ev[day.ev.length - 1];
+  let pos;
+  if (ev.k === 'mov') { const u = Math.min(1, (t - ev.t0) / Math.max(1e-9, ev.t1 - ev.t0)); pos = ev.from + (ev.to - ev.from) * u; }
+  else if (ev.k === 'stay') pos = ev.i; else pos = ev.at;
+  if (t >= day.end) pos = p.N;
+  geo.truck.setAttribute('transform', `translate(${geo.X(pos)},${geo.lineY})`);
+  let stays = 0;
+  day.ev.forEach((e) => {
+    if (e.k !== 'stay') return;
+    const done = Math.max(0, Math.min(t, e.t1) - e.t0), b = geo.bars[e.i];
+    b.fill.setAttribute('y', geo.barBottom - geo.barH(done)); b.fill.setAttribute('height', geo.barH(done));
+    stays += done;
+  });
+  $('d-clock').textContent = clock(t);
+  $('d-S').textContent = hm(stays);
+  $('d-T').textContent = t >= day.end ? hm(day.T) : '…';
+}
+function play() {
+  cancelAnimationFrame(anim);
+  const dur = 14000, start = performance.now();
+  $('b-day').disabled = true;
+  const step = (now) => {
+    const u = Math.min(1, (now - start) / dur);
+    frame(u * day.end);
+    if (u < 1) anim = requestAnimationFrame(step); else $('b-day').disabled = false;
+  };
+  anim = requestAnimationFrame(step);
+}
+function finish() { cancelAnimationFrame(anim); $('b-day').disabled = false; frame(day.end); }
+$('b-day').onclick = () => newDay(true);
+
+/* ---------- Arranque ---------- */
+buildControls(); updateHint(); resetSim(); newDay(false); addDays(2000);
+})();
+</script>
+</body>
+</html>

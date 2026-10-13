@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Tiempo de mercado de una ruta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="vendor/iso.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 /* Layout: encabezado con la fórmula; el diagrama de la ruta a todo lo ancho; abajo, controles a la izquierda y resultados de miles de días a la derecha.
@@ -54,6 +55,34 @@ p { margin: 0; }
 
 /* Diagrama */
 .diagram { overflow-x: auto; }
+
+/* Diorama (kit anatomy): tokens del kit ajustados a la paleta de la página */
+.dio-card { margin: 0 0 18px; position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 34px 8px 30px; overflow: hidden; }
+.dio-corner { position: absolute; font-size: 12px; color: var(--muted); }
+.dio-corner.tl { top: 10px; left: 14px; font: 600 12px var(--f-display); letter-spacing: .08em; text-transform: uppercase; }
+.dio-corner.tr { top: 10px; right: 14px; font: 600 13px var(--f-display); color: var(--ink); }
+.dio-corner.bl { bottom: 9px; left: 14px; }
+.dio-corner.br { bottom: 9px; right: 14px; color: var(--ink); font-size: 12.5px; }
+@media (max-width: 640px) { .dio-corner.bl { display: none; } .dio .iso-svg { width: 118%; margin-left: -9%; } }
+.iso.dio[data-theme="light"] {
+  --anatomy-paper: #ffffff; --anatomy-card: #ffffff; --anatomy-face: #ffffff; --anatomy-top: #ffffff;
+  --anatomy-hi: #121212; --anatomy-lit: #000000; --anatomy-dot: #2a2a2a; --anatomy-red: #c8102e;
+  background: transparent;
+}
+.dio .asphalt > .iso-top, .dio .asphalt > .iso-fill, .dio .asphalt-top { fill: #e4e4e1; }
+.dio .curb > .iso-top { fill: #f2f2f0; }
+.dio .lawn > .iso-top, .dio .lawn > .iso-fill { fill: #ececea; }
+.dio .walk > .iso-top, .dio .walk > .iso-fill { fill: #f8f8f6; }
+.dio .crown > .iso-top { fill: #e9e9e6; }
+.dio .crown > .iso-shade[data-shade="0"] { fill: #cfcfcb; } .dio .crown > .iso-shade[data-shade="1"] { fill: #d8d8d4; }
+.dio .crown > .iso-shade[data-shade="2"] { fill: #e0e0dc; } .dio .crown > .iso-shade[data-shade="3"] { fill: #e6e6e2; }
+.dio .box > .iso-fill { fill: #fbe1e5; } .dio .box > .iso-top { fill: #f6c7ce; }
+.dio .box > .iso-shade[data-shade="0"] { fill: #d9415a; } .dio .box > .iso-shade[data-shade="1"] { fill: #e35d73; }
+.dio .box > .iso-shade[data-shade="2"] { fill: #eb7d8f; } .dio .box > .iso-shade[data-shade="3"] { fill: #f19dab; }
+.dio .box > .iso-edge { stroke: #8f0b21; } .dio .box > .iso-crease, .dio .box > .iso-bevel { stroke: #fbe1e5; }
+.dio .store.active .awning > .iso-top { fill: #c8102e; }
+.dio .store.active .awning > .iso-shade { fill: #9e0c24; }
+.dio .store.active .body > .iso-edge, .dio .store.active .sign > .iso-edge { stroke: #c8102e; }
 .diagram svg { display: block; width: 100%; min-width: 720px; height: auto; }
 svg text { font-family: var(--f-body); fill: var(--muted); font-size: 12px; }
 .daystat { display: flex; gap: 22px; flex-wrap: wrap; align-items: baseline; }
@@ -125,9 +154,9 @@ input[type=range] { width: 100%; margin: 0; accent-color: var(--ink); }
   <header>
     <div class="eyebrow"><a href="../">simuladero</a> · fenómeno 1</div>
     <h1>Tiempo de mercado de una ruta</h1>
-    <p class="lead">Una sola ruta, simulada miles de días. Los traslados, la comida y los STEM son fijos; lo único que cambia de un día a otro es el stay time de cada cliente, que depende de las cajas y de un residual operativo.</p>
+    <p class="lead">Una sola ruta, simulada miles de días. Cada día cambian dos cosas: el stay time de cada cliente, que depende de las cajas y de un residual operativo, y el tiempo de cada traslado, que varía al azar alrededor de su promedio. La comida es fija.</p>
     <div class="formula" aria-label="Tiempo de mercado = STEM 1 + suma de stay times + traslados + comida + STEM 2">
-      <span class="t">STEM₁</span><span class="op">+</span><span class="s">Σ Stay time</span><span class="op">+</span><span class="t">(N − 1)·d</span><span class="op">+</span><span class="t">Comida</span><span class="op">+</span><span class="t">STEM₂</span>
+      <span class="t">STEM₁</span><span class="op">+</span><span class="s">Σ Stay time</span><span class="op">+</span><span class="t">Σ Traslados</span><span class="op">+</span><span class="t">Comida</span><span class="op">+</span><span class="t">STEM₂</span>
     </div>
     <div class="formula2">Stay time del cliente i = t_fijo + t_var × cajas<sub>i</sub> + W<sub>i</sub></div>
   </header>
@@ -136,10 +165,15 @@ input[type=range] { width: 100%; margin: 0; accent-color: var(--ink); }
     <header>
       <div>
         <h2>Un día en la ruta</h2>
-        <p class="sub">Las barras rojas son el stay time de cada cliente ese día. Pasa el cursor sobre un cliente para ver su cálculo.</p>
+        <p class="sub">El camión sale del CEDIS, visita a cada cliente en orden, para a comer y regresa. En cada tiendita se apilan las cajas que se descargan; abajo, las barras rojas son el stay time de cada cliente ese día.</p>
       </div>
       <div class="btns"><button class="btn primary" id="b-day">Simular un día</button></div>
     </header>
+    <figure class="dio-card">
+      <div class="dio-corner tl">Fig 1</div><div class="dio-corner tr">Ruta en miniatura</div>
+      <div class="iso dio" data-theme="light" id="dio"></div>
+      <div class="dio-corner bl">Una tiendita por cliente · cajas en rojo</div><div class="dio-corner br mono" id="dio-readout" data-readout>—</div>
+    </figure>
     <div class="daystat">
       <span class="muted">Día <span class="mono" id="d-num">1</span></span>
       <span>Reloj <b class="mono" id="d-clock">07:00</b></span>
@@ -158,7 +192,7 @@ input[type=range] { width: 100%; margin: 0; accent-color: var(--ink); }
         <header>
           <div>
             <h2>Miles de días</h2>
-            <p class="sub">Cada día sortea cajas y residual para todos los clientes. Al cambiar un parámetro se reinicia con 2,000 días.</p>
+            <p class="sub">Cada día sortea cajas, residual y traslados. Al cambiar un parámetro se reinicia con 2,000 días.</p>
           </div>
           <div class="btns">
             <button class="btn" id="b-1k">+1,000 días</button>
@@ -184,13 +218,13 @@ input[type=range] { width: 100%; margin: 0; accent-color: var(--ink); }
         <header>
           <div>
             <h2>Anatomía del tiempo de mercado</h2>
-            <p class="sub">El día promedio, separado en sus piezas. Negro y gris: lo que se repite igual cada día. Rojo: el stay time.</p>
+            <p class="sub">El día promedio, separado en sus piezas. Negro y gris: traslados, STEM y comida. Rojo: el stay time.</p>
           </div>
         </header>
         <div class="chart"><svg id="anat" viewBox="0 0 900 120" role="img" aria-label="Composición del tiempo de mercado promedio"></svg></div>
         <div class="legend" id="anat-legend"></div>
         <div class="split">
-          <div class="fact"><b id="f-share">—</b>del día promedio es stay time. Es la única parte que varía.</div>
+          <div class="fact"><b id="f-share">—</b>del día promedio es stay time. El resto son traslados, STEM y comida.</div>
           <div class="fact"><b id="f-var">—</b><span id="f-var-txt"></span></div>
         </div>
       </section>
@@ -214,14 +248,14 @@ input[type=range] { width: 100%; margin: 0; accent-color: var(--ink); }
           <div class="fact"><b id="f-ruido">—</b>por ruta, si cada cliente se predice con un error <i>al azar</i> de ±5 min. Con <span id="f-n"></span> clientes los errores se compensan entre sí: crece con √N.</div>
           <div class="fact sesgo"><b id="f-sesgo">—</b>por ruta, todos los días y siempre del mismo lado, si el modelo se equivoca 5 min <i>en la misma dirección</i> con cada uno de los <span id="f-n2"></span> clientes: crece con N.</div>
         </div>
-        <p class="sub" style="margin-top:12px">Ni el mejor modelo de cajas llega al perfecto: el residual W (espera, cobro, firma) no se puede predecir con las cajas. Para acercarse habría que medir o explicar W. Lo que sí está en manos del modelo es no tener sesgo: un sesgo pequeño por cliente se convierte en horas por ruta.</p>
+        <p class="sub" style="margin-top:12px">Ni el mejor modelo de cajas llega al perfecto: el residual W (espera, cobro, firma) no se puede predecir con las cajas. Para acercarse habría que medir o explicar W. Y ni el perfecto llega a cero mientras los traslados varíen: el plan sólo conoce su promedio. Lo que sí está en manos del modelo es no tener sesgo: un sesgo pequeño por cliente se convierte en horas por ruta.</p>
       </section>
 
       <section class="card">
         <header>
           <div>
             <h2>Qué se sortea cada día</h2>
-            <p class="sub">Cada cliente de cada día recibe cajas y residual nuevos, independientes entre sí y entre clientes. Todo lo demás es fijo.</p>
+            <p class="sub">Cada día se sortean de nuevo las cajas y el residual de cada cliente y el tiempo de cada traslado, todos independientes entre sí. La comida y el peso de cada tramo son fijos.</p>
           </div>
         </header>
         <div class="dist-wrap">
@@ -231,7 +265,10 @@ input[type=range] { width: 100%; margin: 0; accent-color: var(--ink); }
               <tr class="rnd"><td>Cajas Q<sub>i</sub></td><td><b>Lognormal</b>, redondeada al entero más cercano (≥ 0)</td><td>Media = cajas promedio; CV = variabilidad de las cajas</td></tr>
               <tr class="rnd"><td>Residual W<sub>i</sub></td><td><b>Lognormal</b> continua (&gt; 0)</td><td>Media = W promedio; CV = variabilidad de W</td></tr>
               <tr><td>Stay time S<sub>i</sub></td><td>Derivada, no se sortea</td><td class="mono">t_fijo + t_var · Q<sub>i</sub> + W<sub>i</sub></td></tr>
-              <tr><td>STEM₁, STEM₂, d, comida</td><td>Constantes</td><td>El valor de su control, igual todos los días</td></tr>
+              <tr class="rnd"><td>Traslado D<sub>j</sub> entre clientes</td><td><b>Lognormal</b> continua (&gt; 0)</td><td>Media = d × peso del tramo; CV = variabilidad de los traslados</td></tr>
+              <tr class="rnd"><td>STEM₁ y STEM₂</td><td><b>Lognormal</b> continua (&gt; 0)</td><td>Media = el valor de su control; mismo CV que los traslados</td></tr>
+              <tr><td>Peso de cada tramo</td><td>Fijo para la ruta (no cambia entre días)</td><td>Entre 0.55 y 1.6 antes de normalizar; promedia 1, así que d es el traslado promedio</td></tr>
+              <tr><td>Comida</td><td>Constante</td><td>El valor de su control, igual todos los días</td></tr>
             </tbody>
           </table>
         </div>
@@ -243,6 +280,8 @@ input[type=range] { width: 100%; margin: 0; accent-color: var(--ink); }
 </div>
 
 <script src="motor.js"></script>
+<script src="vendor/iso-kit.js"></script>
+<script src="diorama.js"></script>
 <script>
 (function () {
 const $ = (id) => document.getElementById(id);
@@ -322,7 +361,7 @@ function resetSim() {
   sim = { th, rnd, nrm: makeNormal(rnd), T: [], sum: 0, sum2: 0, over: 0, lo, hi, bins: new Array(60).fill(0), parts: null, nParts: 0, busy: false };
   // error del plan (real − plan) por modelo
   const eR = Math.max(30, Math.abs(th.sesgoRuta) + 4.2 * th.sdErr[0]);
-  sim.plan = { eLo: -eR, eHi: eR, m: MODELOS.map(() => ({ sum: 0, sum2: 0, abs: 0, sinAviso: 0, extra: 0, ocioso: 0, bins: new Array(60).fill(0) })) };
+  sim.plan = { eLo: -eR, eHi: eR, m: MODELOS.map(() => ({ sum: 0, sum2: 0, abs: 0, sinAviso: 0, extra: 0, ocioso: 0, bins: new Array(61).fill(0) })) };
   drawStats();
 }
 function addDays(n) {
@@ -449,10 +488,10 @@ function drawAnat() {
   $('anat-legend').innerHTML = PARTS.map(([, n, c]) => `<span><span class="sw" style="background:var(${c})"></span>${n}</span>`).join('');
   const stay = m.fijo + m.variable + m.residual;
   $('f-share').textContent = f0.format(stay / total * 100) + '%';
-  const th = sim.th, tot = th.varCajas + th.varW;
+  const th = sim.th, tot = th.varCajas + th.varW + th.varTras;
   if (tot > 0) {
-    $('f-var').textContent = f0.format(th.varCajas / tot * 100) + '% / ' + f0.format(th.varW / tot * 100) + '%';
-    $('f-var-txt').textContent = 'de la variación entre días viene de las cajas / del residual W.';
+    $('f-var').textContent = [th.varCajas, th.varW, th.varTras].map((v) => f0.format(v / tot * 100) + '%').join(' / ');
+    $('f-var-txt').textContent = 'de la variación entre días viene de las cajas / del residual W / de los traslados.';
   } else { $('f-var').textContent = '0 min'; $('f-var-txt').textContent = 'de variación: sin incertidumbre, todos los días son iguales.'; }
 }
 
@@ -508,7 +547,7 @@ function drawPlan() {
     c.forEach((v, i) => { d += `L${X(P.eLo + i * bw)},${Y(v)}L${X(P.eLo + (i + 1) * bw)},${Y(v)}`; });
     d += `L${X(P.eHi)},${Y(0)}`;
     el('path', j === 1 ? { d: d + 'Z', fill: MCOL[j], 'fill-opacity': 0.18, stroke: MCOL[j], 'stroke-width': 2 }
-      : { d, fill: 'none', stroke: MCOL[j], 'stroke-width': j === 2 ? 2 : 1.5, 'stroke-dasharray': j === 0 ? '5 3' : null }, svg);
+      : { d, fill: 'none', stroke: MCOL[j], 'stroke-width': j === 2 ? 2 : 1.5, ...(j === 0 ? { 'stroke-dasharray': '5 3' } : {}) }, svg);
     const peak = Math.max(...c);
     if (peak > ymax) { const i = c.indexOf(peak); el('text', { x: X(P.eLo + (i + 1) * bw) + 8, y: T + 30, style: 'fill:var(--ink);font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:4px' }, svg, `↑ ${MODELOS[j]}: ${f0.format(peak * 100)}% de los días aquí`); }
   });
@@ -529,31 +568,35 @@ function newDay(animate) {
   day = dia(p, dayRnd, dayNrm);
   buildTimeline();
   drawRoute();
+  Diorama.build($('dio'), p, day, (text) => { const r = $('dio-readout'); if (r.textContent !== text) r.textContent = text; });
   $('d-num').textContent = dayNum;
   if (animate && !reduced) play(); else finish();
 }
 function buildTimeline() {
   // eventos en orden: viajar, quedarse, comer
   const ev = []; let t = 0;
-  ev.push({ k: 'mov', from: -1, to: 0, t0: t, t1: (t += p.stem1) });
+  ev.push({ k: 'mov', from: -1, to: 0, t0: t, t1: (t += day.stem1) });
   day.clientes.forEach((c, i) => {
     ev.push({ k: 'stay', i, t0: t, t1: (t += c.S) });
     if (i === day.comidaTras && i < p.N - 1) {
-      ev.push({ k: 'mov', from: i, to: i + 0.5, t0: t, t1: (t += p.d / 2) });
+      ev.push({ k: 'mov', from: i, to: i + 0.5, t0: t, t1: (t += day.tramos[i] / 2) });
       ev.push({ k: 'comida', at: i + 0.5, t0: t, t1: (t += p.C) });
-      ev.push({ k: 'mov', from: i + 0.5, to: i + 1, t0: t, t1: (t += p.d / 2) });
-    } else if (i < p.N - 1) ev.push({ k: 'mov', from: i, to: i + 1, t0: t, t1: (t += p.d) });
+      ev.push({ k: 'mov', from: i + 0.5, to: i + 1, t0: t, t1: (t += day.tramos[i] / 2) });
+    } else if (i < p.N - 1) ev.push({ k: 'mov', from: i, to: i + 1, t0: t, t1: (t += day.tramos[i]) });
   });
   if (day.comidaTras >= p.N - 1) ev.push({ k: 'comida', at: p.N - 1, t0: t, t1: (t += p.C) });
-  ev.push({ k: 'mov', from: p.N - 1, to: p.N, t0: t, t1: (t += p.stem2) });
+  ev.push({ k: 'mov', from: p.N - 1, to: p.N, t0: t, t1: (t += day.stem2) });
   day.ev = ev; day.end = t;
 }
 let geo = null;
 function drawRoute() {
   const svg = $('route'); svg.innerHTML = '';
   const W = 1000, lineY = 168, x0 = 40, x1 = W - 40, stemW = 120;
-  const gap = (x1 - x0 - 2 * stemW) / Math.max(1, p.N - 1);
-  const X = (pos) => pos < 0 ? x0 : pos >= p.N ? x1 : x0 + stemW + pos * gap;
+  // separación entre clientes proporcional al traslado promedio de cada tramo
+  const w = day.pesos, unit = (x1 - x0 - 2 * stemW) / Math.max(1, p.N - 1);
+  const cum = [0]; w.forEach((wj) => cum.push(cum[cum.length - 1] + wj));
+  const X = (pos) => { if (pos < 0) return x0; if (pos >= p.N) return x1; const i = Math.floor(pos), f = pos - i; return x0 + stemW + unit * (cum[i] + (i < w.length ? f * w[i] : 0)); };
+  const gap = unit * Math.min(1, ...w);
   const maxS = Math.max(...day.clientes.map((c) => c.S), 1);
   const barTop = 24, barBottom = lineY - 26, barH = (v) => (barBottom - barTop) * v / maxS;
   const bw = Math.min(26, gap * 0.62);
@@ -562,8 +605,8 @@ function drawRoute() {
   el('line', { x1: x0, x2: X(0), y1: lineY, y2: lineY, stroke: 'var(--g2)', 'stroke-width': 3, 'stroke-dasharray': '7 6' }, svg);
   el('line', { x1: X(0), x2: X(p.N - 1), y1: lineY, y2: lineY, stroke: 'var(--ink)', 'stroke-width': 3 }, svg);
   el('line', { x1: X(p.N - 1), x2: x1, y1: lineY, y2: lineY, stroke: 'var(--g2)', 'stroke-width': 3, 'stroke-dasharray': '7 6' }, svg);
-  el('text', { x: (x0 + X(0)) / 2, y: lineY + 22, 'text-anchor': 'middle' }, svg, 'STEM₁ ' + f0.format(p.stem1) + ' min');
-  el('text', { x: (X(p.N - 1) + x1) / 2, y: lineY + 22, 'text-anchor': 'middle' }, svg, 'STEM₂ ' + f0.format(p.stem2) + ' min');
+  el('text', { x: (x0 + X(0)) / 2, y: lineY + 22, 'text-anchor': 'middle' }, svg, 'STEM₁ ' + f0.format(day.stem1) + ' min');
+  el('text', { x: (X(p.N - 1) + x1) / 2, y: lineY + 22, 'text-anchor': 'middle' }, svg, 'STEM₂ ' + f0.format(day.stem2) + ' min');
   // inicio y fin
   [[x0, 'Inicio'], [x1, 'Fin']].forEach(([x, t]) => {
     el('circle', { cx: x, cy: lineY, r: 14, fill: 'var(--surface)', stroke: 'var(--ink)', 'stroke-width': 2.5 }, svg);
@@ -602,6 +645,7 @@ function explain(i, longest) {
   $('detail').innerHTML = `${longest ? 'El stay más largo del día: ' : ''}<b>Cliente ${i + 1}</b> · ${c.Q} cajas → ${fmt(1).format(p.tFijo)} + ${fmt(2).format(p.tVar)} × ${c.Q} + ${f1.format(c.W)} (W) = <b>${f1.format(c.S)} min</b>`;
 }
 function frame(t) {
+  Diorama.frame(t);
   const ev = day.ev.find((e) => t >= e.t0 && t < e.t1) || day.ev[day.ev.length - 1];
   let pos;
   if (ev.k === 'mov') { const u = Math.min(1, (t - ev.t0) / Math.max(1e-9, ev.t1 - ev.t0)); pos = ev.from + (ev.to - ev.from) * u; }
@@ -621,7 +665,7 @@ function frame(t) {
 }
 function play() {
   cancelAnimationFrame(anim);
-  const dur = 7000, start = performance.now();
+  const dur = 14000, start = performance.now();
   $('b-day').disabled = true;
   const step = (now) => {
     const u = Math.min(1, (now - start) / dur);
