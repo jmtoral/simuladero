@@ -8,6 +8,7 @@ import * as G from "./kit/lathe.mjs";
 import * as A from "./kit/audit.mjs";
 import { tubePieces, tubeSvg, crossingsOf } from "./kit/tube.mjs";
 import * as M from "./modelo.mjs";
+import { figura2 } from "./figura2.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DARK = process.argv.includes("--dark");
@@ -375,11 +376,13 @@ const body = `<div class="se">${k.plateHtml({
   body: stage,
 })}<p class="se-source">Source: M. Allan et al., “Stereo Correspondence and Reconstruction of Endoscopic Data Challenge,” arXiv:2101.01133 (2021), <a href="https://arxiv.org/abs/2101.01133">arxiv.org/abs/2101.01133</a>. Setup, projector and protocol follow sections II, V and VI; the 3.5 mm figure is read from tables II and III. The tissue shape and the camera values are illustrative.</p></div>`;
 
+const FIG2 = figura2();
 const CSS = readFileSync(join(HERE, "estilo.css"), "utf8");
 const LIVE = readFileSync(join(HERE, "vivo.js"), "utf8").replace("__DATA__", JSON.stringify(DATA));
-const script = strip("kit/iso-kit.mjs") + strip("modelo.mjs") + LIVE;
-const page = k.pageHtml({ title: "Structured light · SCARED", theme: DARK ? "dark" : "light", body: `<style>${CSS}</style>${body}`, script, width: 820 });
+const script = strip("kit/iso-kit.mjs") + strip("modelo.mjs") + LIVE + FIG2.live;
+const page = k.pageHtml({ title: "Structured light · SCARED", theme: DARK ? "dark" : "light", body: `<style>${CSS}</style>${body}${FIG2.body}`, script, width: 820 });
 const out = DARK ? join(HERE, "oscuro.html") : join(HERE, "..", "index.html");
 writeFileSync(out, page);
 console.log("escribí", out, `${(page.length / 1024).toFixed(0)} KB`, `${R.items.length} piezas`, `${CABLES.length} cables`);
 A.auditOrExit(R, P);
+if (process.argv.includes("--audit")) { console.log("— Fig. 2 —"); A.auditOrExit(FIG2.R, FIG2.P); }

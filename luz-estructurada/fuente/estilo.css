@@ -111,6 +111,75 @@
   fill: var(--se-check);
 }
 
+.se2 {
+  --se2-glass: #3a3f44;
+  --se2-lcd: #1d2023;
+  --se2-lcd-text: #e8ecef;
+  margin-top: 56px;
+}
+
+.iso[data-theme="dark"] .se2 {
+  --se2-glass: #060707;
+  --se2-lcd: #070808;
+}
+
+.se2 .iso-plate {
+  overflow: hidden;
+}
+
+.se2-stage {
+  position: relative;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.se2-stage:focus-visible {
+  outline: 1px solid var(--anatomy-muted);
+  outline-offset: 6px;
+}
+
+.se2-stage > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.se2-glass {
+  fill: var(--se2-glass);
+}
+
+.se2-rim {
+  fill: none;
+  stroke: var(--anatomy-lo, currentColor);
+  stroke-width: 0.6;
+  vector-effect: non-scaling-stroke;
+}
+
+.se2-pips circle {
+  fill: var(--anatomy-mid, currentColor);
+}
+
+.se-lcd {
+  fill: var(--se2-lcd);
+}
+
+.se-lcd-text {
+  fill: var(--se2-lcd-text);
+  font: 600 4.2px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (max-width: 560px) {
+  .se2 .iso-plate {
+    padding: 48px 6px 64px;
+  }
+
+  .se2-stage {
+    width: 112%;
+    margin: -4% -6% -2%;
+  }
+}
+
 .se-source {
   margin: 10px 2px 0;
   font-size: 12px;
