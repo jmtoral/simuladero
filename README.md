@@ -11,6 +11,7 @@ Cada simulador es una página HTML autocontenida: no hay build ni dependencias q
 |---|---|---|
 | Tiempo de mercado de una ruta | [`ruta/`](ruta/) | Cómo el stay time de cada cliente y los traslados arman la jornada, cuánto varía de un día a otro y qué tan bueno es un plan según el modelo de stay times que lo arma. |
 | Flota y calidad de predicción | [`flota/`](flota/) | Cuántos clientes caben por ruta y cuánta flota se ahorra según qué tan bien se predice el stay time. |
+| Luz estructurada (SCARED) | [`luz-estructurada/`](luz-estructurada/) | Cómo se obtuvo la profundidad verdadera del reto SCARED (MICCAI 2019): 10 patrones de código Gray, un endoscopio estéreo y Z = f·B/d. Figura interactiva. |
 
 Las versiones anteriores siguen publicadas en [`legacy/`](legacy/).
 
@@ -63,6 +64,9 @@ ruta/
   prueba.js           verificaciones del motor
   vendor/             kit isométrico de terceros
 flota/index.html      simulador de flota
+luz-estructurada/
+  index.html          figura interactiva en inglés (generada)
+  fuente/             build.mjs, modelo.mjs, vivo.js, estilo.css, prueba.mjs y el kit
 legacy/               versiones anteriores
 ```
 
@@ -70,4 +74,6 @@ Para usarlo localmente basta abrir `index.html` en el navegador.
 
 ## Créditos
 
-El diorama usa el kit isométrico de [anatomy](https://github.com/wheresryan22/anatomy) (MIT, © 2026 Ryan), copiado en [`ruta/vendor/`](ruta/vendor/) con su licencia.
+El diorama usa el kit isométrico de [anatomy](https://github.com/wheresryan22/anatomy) (MIT, © 2026 Ryan), copiado en [`ruta/vendor/`](ruta/vendor/) y [`luz-estructurada/fuente/kit/`](luz-estructurada/fuente/kit/) con su licencia.
+
+Para regenerar la figura de luz estructurada: `node luz-estructurada/fuente/build.mjs` (agrega `--audit` para verificar la geometría y `--dark` para el tema oscuro); `node luz-estructurada/fuente/prueba.mjs` verifica el modelo.

@@ -1,0 +1,123 @@
+.se {
+  --se-screen: #1d2023;
+  --se-osd: #c9cdd1;
+  --se-mark: #ffffff;
+  --se-band: rgba(255, 70, 50, 0.55);
+  --se-led-on: #d8261c;
+  --se-check: #2a2a2a;
+}
+
+.iso[data-theme="dark"] .se {
+  --se-screen: #070808;
+  --se-led-on: #ff4a3d;
+  --se-check: #8a8a8a;
+}
+
+.se .iso-plate {
+  overflow: hidden;
+}
+
+.se-stage {
+  position: relative;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: crosshair;
+}
+
+.se-stage:focus-visible {
+  outline: 1px solid var(--anatomy-muted);
+  outline-offset: 6px;
+}
+
+.se-stage > svg,
+.se-stage > canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.se-stage > .se-layer {
+  position: absolute;
+  inset: 0;
+  height: 100% !important;
+  pointer-events: none;
+}
+
+.se-said {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.se-screen {
+  fill: var(--se-screen);
+}
+
+.se-osd {
+  fill: var(--se-osd);
+  font: 600 3.4px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  letter-spacing: 0.3px;
+}
+
+.se-marks .se-cross {
+  stroke: var(--se-mark);
+  stroke-width: 0.5;
+  fill: none;
+}
+
+.se-marks .se-band {
+  fill: var(--se-band);
+}
+
+.se-led path {
+  transition: fill 160ms ease;
+}
+
+.se-led[data-bit="1"] path:not(.iso-edge) {
+  fill: var(--se-led-on);
+}
+
+.se-led:not([data-bit]) {
+  opacity: 0.45;
+}
+
+.se-beam {
+  stroke-dasharray: 1.2 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .se-led path {
+    transition: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .se .iso-plate {
+    padding: 48px 6px 64px;
+  }
+
+  .se-stage {
+    width: 116%;
+    margin: -6% -8% -4%;
+  }
+}
+
+.se-check {
+  fill: var(--se-check);
+}
+
+.se-source {
+  margin: 10px 2px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--anatomy-muted);
+}
+
+.se-source a {
+  color: inherit;
+}
